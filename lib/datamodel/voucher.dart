@@ -1,38 +1,34 @@
 import 'package:assignment/datamodel/mappable.dart';
 
 class Voucher implements Mappable {
-  late int id;
-  late String firebaseId;
+  late String id;
   late int subId;
   late String desc;
   late String startDate;
   late String endDate;
   late double percentage;
-  late int lastUpdated;
 
-  Voucher(
-      {required this.id,
-      required this.subId,
-      required this.desc,
-      required this.endDate,
-      required this.startDate,
-      required this.percentage,
-      required this.firebaseId,
-      required this.lastUpdated});
+  Voucher({
+    required this.id,
+    required this.subId,
+    required this.desc,
+    required this.endDate,
+    required this.startDate,
+    required this.percentage,
+  });
 
   factory Voucher.fromMap(Map<String, dynamic> map) {
     return Voucher(
-        id: map['id'] as int,
-        subId: map['subId'] as int,
-        desc: map['description'] as String,
-        startDate: map['startDate'] as String,
-        endDate: map['endDate'] as String,
-        percentage: map['percentage'] as double,
-        firebaseId: map['firebaseId'] as String,
-        lastUpdated: map['lastUpdated'] as int);
+      id: map['id'] as String,
+      subId: map['subId'] as int,
+      desc: map['description'] as String,
+      startDate: map['startDate'] as String,
+      endDate: map['endDate'] as String,
+      percentage: map['percentage'] as double,
+    );
   }
 
-  int get getId => id;
+  String get getId => id;
 
   int get getSubId => subId;
 
@@ -44,19 +40,7 @@ class Voucher implements Mappable {
 
   double get getPercentage => percentage;
 
-  String get getFirebaseId => firebaseId;
-
-  int get getLastUpdated => lastUpdated;
-
-  set setFirebaseId(String firebaseId) {
-    this.firebaseId = firebaseId;
-  }
-
-  set setLastUpdated(int lastUpdated) {
-    this.lastUpdated = lastUpdated;
-  }
-
-  set setId(int id) {
+  set setId(String id) {
     this.id = id;
   }
 
@@ -82,14 +66,11 @@ class Voucher implements Mappable {
 
   Map<String, dynamic> toMap() {
     return {
-      "id": id,
       "subId": subId,
       "description": desc,
       "startDate": startDate,
       "endDate": endDate,
       "percentage": percentage,
-      'lastUpdated': lastUpdated,
-      'firebaseId': firebaseId
     };
   }
 }
