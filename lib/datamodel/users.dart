@@ -1,22 +1,19 @@
 import 'package:assignment/datamodel/mappable.dart';
 
 abstract class Users implements Mappable {
-  late int id;
-  late String firebaseId;
+  late String id;
   late String name;
   late String birthDate;
   late String ic;
-  late int lastUpdated;
 
-  Users(
-      {required this.id,
-      required this.name,
-      required this.birthDate,
-      required this.ic,
-      required this.firebaseId,
-      required this.lastUpdated});
+  Users({
+    required this.id,
+    required this.name,
+    required this.birthDate,
+    required this.ic,
+  });
 
-  int get getId => id;
+  String get getId => id;
 
   String get getName => name;
 
@@ -24,11 +21,7 @@ abstract class Users implements Mappable {
 
   String get getIc => ic;
 
-  String get getFirebaseId => firebaseId;
-
-  int get getLastUpdated => lastUpdated;
-
-  set setId(int id) {
+  set setId(String id) {
     this.id = id;
   }
 
@@ -46,13 +39,5 @@ abstract class Users implements Mappable {
 
   set setIc(String ic) {
     this.ic = ic;
-  }
-
-  set setFirebaseId(String firebaseId) {
-    this.firebaseId = firebaseId;
-  }
-
-  set setLastUpdated(int lastUpdated) {
-    this.lastUpdated = lastUpdated;
   }
 }

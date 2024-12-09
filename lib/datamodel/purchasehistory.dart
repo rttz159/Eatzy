@@ -1,14 +1,12 @@
 import 'package:assignment/datamodel/mappable.dart';
 
 class PurchaseHistory implements Mappable {
-  late int id;
-  late String firebaseId;
+  late String id;
   late String userId;
   int? voucherId;
   late int prodId;
   late int qty;
   late String purchaseDate;
-  late int lastUpdated;
 
   PurchaseHistory(
       {required this.id,
@@ -16,23 +14,20 @@ class PurchaseHistory implements Mappable {
       required this.prodId,
       required this.qty,
       required this.purchaseDate,
-      required this.firebaseId,
-      required this.lastUpdated,
       this.voucherId});
 
   factory PurchaseHistory.fromMap(Map<String, dynamic> map) {
     return PurchaseHistory(
-        id: map['id'] as int,
-        userId: map['userId'] as String,
-        prodId: map['prodId'] as int,
-        qty: map['qty'] as int,
-        voucherId: map['voucherId'] as int,
-        purchaseDate: map['purchaseDate'] as String,
-        lastUpdated: map['lastUpdated'] as int,
-        firebaseId: map['firebaseId'] as String);
+      id: map['id'] as String,
+      userId: map['userId'] as String,
+      prodId: map['prodId'] as int,
+      qty: map['qty'] as int,
+      voucherId: map['voucherId'] as int,
+      purchaseDate: map['purchaseDate'] as String,
+    );
   }
 
-  int get getId => id;
+  String get getId => id;
 
   String get getUserId => userId;
 
@@ -44,19 +39,7 @@ class PurchaseHistory implements Mappable {
 
   String get getPurchaseDate => purchaseDate;
 
-  String get getFirebaseId => firebaseId;
-
-  int get getLastUpdated => lastUpdated;
-
-  set setFirebaseId(String firebaseId) {
-    this.firebaseId = firebaseId;
-  }
-
-  set setLastUpdated(int lastUpdated) {
-    this.lastUpdated = lastUpdated;
-  }
-
-  set setId(int id) {
+  set setId(String id) {
     this.id = id;
   }
 
@@ -85,14 +68,11 @@ class PurchaseHistory implements Mappable {
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
       'userId': userId,
       'voucherId': voucherId,
       'prodId': prodId,
       'qty': qty,
       'purchaseDate': purchaseDate,
-      'lastUpdated': lastUpdated,
-      'firebaseId': firebaseId
     };
   }
 }
