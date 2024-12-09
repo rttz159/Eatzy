@@ -1,5 +1,5 @@
 import 'localdatabase.dart';
-import 'clouddatabase.dart';
+import '../clouddatabase.dart';
 
 class Database {
   Database._();

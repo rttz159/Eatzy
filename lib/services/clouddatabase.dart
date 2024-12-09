@@ -3,13 +3,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class CloudDatabase {
   static final CloudDatabase _instance = CloudDatabase._();
 
-  CloudDatabase._();
-
-  final _firestore = FirebaseFirestore.instance;
-
-  factory CloudDatabase() {
-    return _instance;
+  CloudDatabase._() {
+    _firestore.settings = const Settings(persistenceEnabled: true);
   }
+
+  factory CloudDatabase() => _instance;
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   static const String products = "products";
   static const String notifications = "notifications";
@@ -20,21 +20,24 @@ class CloudDatabase {
   static const String vendingMachine = "vendingmachine";
   static const String voucher = "voucher";
 
-  get firestore => _firestore;
+  FirebaseFirestore get firestore => _firestore;
 
-  //Create or Update
-  Future<String> save(String collection, Map<String, dynamic> data,
+  // Create or Update
+  Future<bool> save(String collection, Map<String, dynamic> data,
       {String? docId}) async {
     try {
+      if (data.isEmpty) {
+        throw Exception("Cannot save empty data.");
+      }
       if (docId != null) {
         await _firestore
             .collection(collection)
             .doc(docId)
             .set(data, SetOptions(merge: true));
-        return docId;
+        return true;
       } else {
-        var docRef = await _firestore.collection(collection).add(data);
-        return docRef.id;
+        await _firestore.collection(collection).add(data);
+        return true;
       }
     } catch (e) {
       throw Exception("Failed to save data: $e");
@@ -49,7 +52,7 @@ class CloudDatabase {
         final docSnapshot =
             await _firestore.collection(collection).doc(docId).get();
         if (docSnapshot.exists) {
-          return [docSnapshot.data()!..['firebaseId'] = docSnapshot.id];
+          return [docSnapshot.data()!..['id'] = docSnapshot.id];
         } else {
           return [];
         }
@@ -68,6 +71,9 @@ class CloudDatabase {
   Future<void> update(
       String collection, String docId, Map<String, dynamic> data) async {
     try {
+      if (data.isEmpty) {
+        throw Exception("Cannot update with empty data.");
+      }
       await _firestore.collection(collection).doc(docId).update(data);
     } catch (e) {
       throw Exception("Failed to update data: $e");
