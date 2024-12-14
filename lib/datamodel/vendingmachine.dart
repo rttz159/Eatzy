@@ -1,7 +1,7 @@
 import 'package:assignment/datamodel/mappable.dart';
 
 class VendingMachine implements Mappable {
-  late String id;
+  late String? id;
   late String desc;
   late String long;
   late String lat;
@@ -22,7 +22,7 @@ class VendingMachine implements Mappable {
     );
   }
 
-  String get getId => id;
+  String? get getId => id;
 
   String get getDesc => desc;
 

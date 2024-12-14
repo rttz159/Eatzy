@@ -1,7 +1,7 @@
 import 'package:assignment/datamodel/mappable.dart';
 
 class Column implements Mappable {
-  late String id;
+  late String? id;
   late String vmId;
   late bool isAvailable;
 
@@ -19,7 +19,7 @@ class Column implements Mappable {
     );
   }
 
-  String get getId => id;
+  String? get getId => id;
 
   String get getVmId => vmId;
 

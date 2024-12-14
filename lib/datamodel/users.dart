@@ -1,25 +1,37 @@
 import 'package:assignment/datamodel/mappable.dart';
 
 abstract class Users implements Mappable {
-  late String id;
+  late String? id;
+  late String? uid;
   late String name;
   late String birthDate;
   late String ic;
+  late String email;
 
   Users({
     required this.id,
+    required this.uid,
     required this.name,
     required this.birthDate,
     required this.ic,
+    required this.email,
   });
 
-  String get getId => id;
+  String? get getId => id;
 
   String get getName => name;
 
   String get getBirthDate => birthDate;
 
   String get getIc => ic;
+
+  String? get getUid => uid;
+
+  String get getEmail => email;
+
+  set setUid(String uid) {
+    this.uid = uid;
+  }
 
   set setId(String id) {
     this.id = id;
@@ -39,5 +51,9 @@ abstract class Users implements Mappable {
 
   set setIc(String ic) {
     this.ic = ic;
+  }
+
+  set setEmail(String email) {
+    this.email = email;
   }
 }

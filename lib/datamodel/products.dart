@@ -1,7 +1,7 @@
 import 'package:assignment/datamodel/mappable.dart';
 
 class Products implements Mappable {
-  late String id;
+  late String? id;
   late String desc;
   late double sellingPrice;
   late double costPrice;
@@ -28,7 +28,7 @@ class Products implements Mappable {
     );
   }
 
-  String get getId => id;
+  String? get getId => id;
 
   String get getDesc => desc;
 

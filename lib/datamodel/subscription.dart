@@ -1,7 +1,7 @@
 import 'package:assignment/datamodel/mappable.dart';
 
 class Subscription implements Mappable {
-  late String id;
+  late String? id;
   late String startDate;
   late String endDate;
   late int colId;
@@ -22,7 +22,7 @@ class Subscription implements Mappable {
     );
   }
 
-  String get getId => id;
+  String? get getId => id;
 
   int get getColId => colId;
 

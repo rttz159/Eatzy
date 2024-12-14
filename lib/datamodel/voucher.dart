@@ -1,7 +1,7 @@
 import 'package:assignment/datamodel/mappable.dart';
 
 class Voucher implements Mappable {
-  late String id;
+  late String? id;
   late int subId;
   late String desc;
   late String startDate;
@@ -28,7 +28,7 @@ class Voucher implements Mappable {
     );
   }
 
-  String get getId => id;
+  String? get getId => id;
 
   int get getSubId => subId;
 
