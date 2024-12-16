@@ -1,6 +1,4 @@
-import 'package:assignment/datamodel/mappable.dart';
-
-abstract class Users implements Mappable {
+abstract class Users {
   late String? id;
   late String? uid;
   late String name;

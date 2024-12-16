@@ -1,9 +1,7 @@
-import 'package:assignment/datamodel/mappable.dart';
-
 import 'users.dart';
 import 'dart:convert';
 
-class NormalUser extends Users implements Mappable {
+class NormalUser extends Users {
   late bool isSpecial;
   List<String>? ownedVoucherId;
 
@@ -28,7 +26,7 @@ class NormalUser extends Users implements Mappable {
     required this.ownedVoucherId,
   });
 
-  factory NormalUser.fromMap(Map<String, dynamic> map) {
+  factory NormalUser.fromJson(Map<String, dynamic> map) {
     return NormalUser.withVoucherList(
       id: map['id'] as String?,
       uid: map['uid'] as String?,
@@ -60,8 +58,7 @@ class NormalUser extends Users implements Mappable {
     this.isSpecial = isSpecial;
   }
 
-  @override
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
       'uid': uid,
       'name': name,

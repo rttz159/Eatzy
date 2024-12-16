@@ -6,6 +6,8 @@ import '../services/auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -60,6 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (user != null) {
+        _authService.setCurrentUser = user;
         Fluttertoast.showToast(msg: "Login successful!");
       }
     }
@@ -184,7 +187,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             PageRouteBuilder(
                                 pageBuilder:
                                     (context, animation, secondaryAnimation) =>
-                                        ResetPasswordScreen(),
+                                        const ResetPasswordScreen(),
                                 transitionsBuilder: (context, animation,
                                     secondaryAnimation, child) {
                                   const begin = Offset(1.0, 0.0);

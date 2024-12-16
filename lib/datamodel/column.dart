@@ -1,6 +1,4 @@
-import 'package:assignment/datamodel/mappable.dart';
-
-class Column implements Mappable {
+class Column {
   late String? id;
   late String vmId;
   late bool isAvailable;
@@ -11,7 +9,7 @@ class Column implements Mappable {
     required this.isAvailable,
   });
 
-  factory Column.fromMap(Map<String, dynamic> map) {
+  factory Column.fromJson(Map<String, dynamic> map) {
     return Column(
       id: map['id'] as String,
       vmId: map['vmId'] as String,
@@ -37,7 +35,7 @@ class Column implements Mappable {
     this.isAvailable = isAvailable;
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
       'vmId': vmId,
       'isAvailable': isAvailable ? 1 : 0,
