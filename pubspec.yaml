@@ -37,6 +37,7 @@ dependencies:
   sqflite: any
   path: any
   firebase_auth: any
+  firebase_storage: any
   sqflite_common_ffi: any
   cloud_firestore: any
   fluttertoast: any
@@ -47,6 +48,10 @@ dependencies:
   flutter_launcher_icons: any
   font_awesome_flutter: any
   intl: any
+  flutter_map: any
+  latlong2: any
+  geolocator: any
+  flutter_map_marker_popup: any
 
 dev_dependencies:
   flutter_test:

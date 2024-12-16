@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:io';
 
 class CloudDatabase {
   static final CloudDatabase _instance = CloudDatabase._();
@@ -10,6 +12,7 @@ class CloudDatabase {
   factory CloudDatabase() => _instance;
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
 
   static const String products = "products";
   static const String notifications = "notifications";
@@ -22,13 +25,20 @@ class CloudDatabase {
 
   FirebaseFirestore get firestore => _firestore;
 
-  // Create or Update
+  // Create or Update Product (with image upload)
   Future<bool> save(String collection, Map<String, dynamic> data,
-      {String? docId}) async {
+      {String? docId, File? imageFile}) async {
     try {
       if (data.isEmpty) {
         throw Exception("Cannot save empty data.");
       }
+
+      if (imageFile != null) {
+        String imageUrl = await _uploadImageToStorage(imageFile);
+
+        data['imageUrl'] = imageUrl;
+      }
+
       if (docId != null) {
         await _firestore
             .collection(collection)
@@ -41,6 +51,21 @@ class CloudDatabase {
       }
     } catch (e) {
       throw Exception("Failed to save data: $e");
+    }
+  }
+
+  // Helper method to upload image to Firebase Storage
+  Future<String> _uploadImageToStorage(File imageFile) async {
+    try {
+      String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+      Reference ref = _firebaseStorage.ref().child('products_images/$fileName');
+
+      await ref.putFile(imageFile);
+
+      String imageUrl = await ref.getDownloadURL();
+      return imageUrl;
+    } catch (e) {
+      throw Exception("Failed to upload image: $e");
     }
   }
 

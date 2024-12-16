@@ -1,6 +1,6 @@
 import 'package:assignment/ui/login.dart';
 import 'package:assignment/services/auth.dart';
-import 'package:assignment/ui/signup.dart';
+import 'package:assignment/ui/vendingmachinemap.dart';
 import 'package:flutter/material.dart';
 import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -47,7 +47,7 @@ class HomePage extends StatelessWidget {
                 context,
                 PageRouteBuilder(
                     pageBuilder: (context, animation, secondaryAnimation) =>
-                        LoginScreen(),
+                        const LoginScreen(),
                     transitionsBuilder:
                         (context, animation, secondaryAnimation, child) {
                       const begin = Offset(1.0, 0.0);
@@ -63,14 +63,14 @@ class HomePage extends StatelessWidget {
                       );
                     }),
               ),
-              child: Text("Login"),
+              child: const Text("Login"),
             ),
             ElevatedButton(
               onPressed: () => Navigator.push(
                 context,
                 PageRouteBuilder(
                     pageBuilder: (context, animation, secondaryAnimation) =>
-                        SignupScreen(),
+                        const VendingMachineMap(),
                     transitionsBuilder:
                         (context, animation, secondaryAnimation, child) {
                       const begin = Offset(1.0, 0.0);
@@ -86,14 +86,14 @@ class HomePage extends StatelessWidget {
                       );
                     }),
               ),
-              child: Text("Signup"),
+              child: const Text("Map"),
             ),
             ElevatedButton(
               onPressed: () {
                 AuthService auth = AuthService();
                 auth.signOut(context);
               },
-              child: Text("Signout"),
+              child: const Text("Signout"),
             ),
           ],
         ),

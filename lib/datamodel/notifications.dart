@@ -1,6 +1,4 @@
-import 'package:assignment/datamodel/mappable.dart';
-
-class Notification implements Mappable {
+class Notification {
   late String? id;
   String desc = "";
   String? userId;
@@ -13,7 +11,7 @@ class Notification implements Mappable {
     this.sellerId,
   });
 
-  factory Notification.fromMap(Map<String, dynamic> map) {
+  factory Notification.fromJson(Map<String, dynamic> map) {
     return Notification(
       id: map['id'] as String,
       desc: map['description'] as String,
@@ -46,7 +44,7 @@ class Notification implements Mappable {
     this.sellerId = sellerId;
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
       "description": desc,
       "userId": userId ??= "",

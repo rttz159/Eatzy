@@ -1,6 +1,4 @@
-import 'package:assignment/datamodel/mappable.dart';
-
-class Subscription implements Mappable {
+class Subscription {
   late String? id;
   late String startDate;
   late String endDate;
@@ -13,7 +11,7 @@ class Subscription implements Mappable {
     required this.colId,
   });
 
-  factory Subscription.fromMap(Map<String, dynamic> map) {
+  factory Subscription.fromJson(Map<String, dynamic> map) {
     return Subscription(
       id: map['id'] as String,
       startDate: map['startDate'] as String,
@@ -46,7 +44,7 @@ class Subscription implements Mappable {
     this.colId = colId;
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
       'startDate': startDate,
       'endDate': endDate,

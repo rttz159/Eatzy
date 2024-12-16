@@ -1,6 +1,4 @@
-import 'package:assignment/datamodel/mappable.dart';
-
-class PurchaseHistory implements Mappable {
+class PurchaseHistory {
   late String? id;
   late String userId;
   int? voucherId;
@@ -16,7 +14,7 @@ class PurchaseHistory implements Mappable {
       required this.purchaseDate,
       this.voucherId});
 
-  factory PurchaseHistory.fromMap(Map<String, dynamic> map) {
+  factory PurchaseHistory.fromJson(Map<String, dynamic> map) {
     return PurchaseHistory(
       id: map['id'] as String,
       userId: map['userId'] as String,
@@ -66,7 +64,7 @@ class PurchaseHistory implements Mappable {
     this.qty = qty;
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
       'userId': userId,
       'voucherId': voucherId,

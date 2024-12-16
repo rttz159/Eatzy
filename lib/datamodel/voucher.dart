@@ -1,6 +1,4 @@
-import 'package:assignment/datamodel/mappable.dart';
-
-class Voucher implements Mappable {
+class Voucher {
   late String? id;
   late int subId;
   late String desc;
@@ -17,7 +15,7 @@ class Voucher implements Mappable {
     required this.percentage,
   });
 
-  factory Voucher.fromMap(Map<String, dynamic> map) {
+  factory Voucher.fromJson(Map<String, dynamic> map) {
     return Voucher(
       id: map['id'] as String,
       subId: map['subId'] as int,
@@ -64,7 +62,7 @@ class Voucher implements Mappable {
     this.percentage = percentage;
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
       "subId": subId,
       "description": desc,

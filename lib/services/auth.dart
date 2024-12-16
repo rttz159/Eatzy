@@ -9,6 +9,11 @@ import 'clouddatabase.dart';
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final CloudDatabase _db = CloudDatabase();
+  static Users? _currentUser;
+
+  Users? get getCurrentUser => _currentUser;
+
+  set setCurrentUser(Users tempUser) => _currentUser = tempUser;
 
   Future<String?> _signUp({
     required String email,
@@ -44,11 +49,13 @@ class AuthService {
     if (isSeller) {
       Sellers tempSeller = tempUser;
       tempSeller.setUid = uid;
-      await _db.save(CloudDatabase.seller, tempSeller.toMap());
+      _currentUser = tempSeller;
+      await _db.save(CloudDatabase.seller, tempSeller.toJson());
     } else {
       NormalUser tempNormalUser = tempUser as NormalUser;
       tempNormalUser.setUid = uid;
-      await _db.save(CloudDatabase.normalUsers, tempNormalUser.toMap());
+      _currentUser = tempNormalUser;
+      await _db.save(CloudDatabase.normalUsers, tempNormalUser.toJson());
     }
 
     Fluttertoast.showToast(msg: 'Sign-up successful!');
@@ -73,10 +80,10 @@ class AuthService {
         final tempUser = tempUserData.$1;
         if (tempBool != null && tempUser != null) {
           if (tempBool) {
-            NormalUser tempNormalUser = NormalUser.fromMap(tempUser);
+            NormalUser tempNormalUser = NormalUser.fromJson(tempUser);
             return tempNormalUser;
           } else {
-            Sellers tempSeller = Sellers.fromMap(tempUser);
+            Sellers tempSeller = Sellers.fromJson(tempUser);
             return tempSeller;
           }
         }

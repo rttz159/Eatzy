@@ -7,6 +7,8 @@ import '../datamodel/normalusers.dart';
 import 'package:intl/intl.dart';
 
 class SignupScreen extends StatefulWidget {
+  const SignupScreen({super.key});
+
   @override
   _SignupScreenState createState() => _SignupScreenState();
 }
@@ -225,7 +227,7 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   Widget selectLayout() {
-    return Container(
+    return SizedBox(
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height,
       child: Scaffold(
@@ -414,7 +416,6 @@ class _SignupScreenState extends State<SignupScreen> {
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: _handleSignupNormalUser,
-                    child: Text("Sign Up"),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                           vertical: 12, horizontal: 32),
@@ -422,6 +423,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           borderRadius: BorderRadius.circular(12)),
                       elevation: 5,
                     ),
+                    child: const Text("Sign Up"),
                   ),
                 ],
               ),

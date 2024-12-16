@@ -1,9 +1,7 @@
-import 'package:assignment/datamodel/mappable.dart';
-
 import 'users.dart';
 import 'dart:convert';
 
-class Sellers extends Users implements Mappable {
+class Sellers extends Users {
   List<String>? subList;
 
   Sellers({
@@ -25,7 +23,7 @@ class Sellers extends Users implements Mappable {
     required this.subList,
   });
 
-  factory Sellers.fromMap(Map<String, dynamic> map) {
+  factory Sellers.fromJson(Map<String, dynamic> map) {
     return Sellers.withSubList(
       id: map['id'] as String?,
       uid: map['uid'] as String?,
@@ -50,7 +48,7 @@ class Sellers extends Users implements Mappable {
     subList?.add(subId);
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
       'uid': uid,
       'name': name,
