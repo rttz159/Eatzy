@@ -1,3 +1,4 @@
+import 'package:assignment/ui/arguidance.dart';
 import 'package:assignment/ui/login.dart';
 import 'package:assignment/services/auth.dart';
 import 'package:assignment/ui/vendingmachinemap.dart';
@@ -87,6 +88,29 @@ class HomePage extends StatelessWidget {
                     }),
               ),
               child: const Text("Map"),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.push(
+                context,
+                PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        ArApp(),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      const begin = Offset(1.0, 0.0);
+                      const end = Offset.zero;
+                      const curve = Curves.ease;
+
+                      var tween = Tween(begin: begin, end: end)
+                          .chain(CurveTween(curve: curve));
+
+                      return SlideTransition(
+                        position: animation.drive(tween),
+                        child: child,
+                      );
+                    }),
+              ),
+              child: const Text("AR"),
             ),
             ElevatedButton(
               onPressed: () {

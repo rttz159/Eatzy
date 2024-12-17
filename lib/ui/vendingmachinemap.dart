@@ -7,6 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'dart:async';
 
 class VendingMachineMap extends StatefulWidget {
   const VendingMachineMap({super.key});
@@ -18,10 +19,6 @@ class VendingMachineMap extends StatefulWidget {
 class _VendingMachineMapState extends State<VendingMachineMap> {
   final MyConnectivityChecker _connectivityChecker = MyConnectivityChecker();
   final MapController _mapController = MapController();
-  final LocationSettings locationSettings = const LocationSettings(
-    accuracy: LocationAccuracy.high,
-    distanceFilter: 100,
-  );
   final CloudDatabase db = CloudDatabase();
   List<VendingMachine> _vendingMachine = [];
   List<Marker> _userMarker = [];
@@ -206,6 +203,7 @@ class _VendingMachineMapState extends State<VendingMachineMap> {
 
     bool internetConnection =
         await _connectivityChecker.checkConnectivityOnce();
+
     try {
       if (internetConnection) {
         final permission = await Geolocator.requestPermission();
@@ -216,8 +214,24 @@ class _VendingMachineMapState extends State<VendingMachineMap> {
           newPosition = await Geolocator.getLastKnownPosition();
           Fluttertoast.showToast(msg: "Last Known Location Used.");
         } else {
-          newPosition = await Geolocator.getCurrentPosition(
-              locationSettings: locationSettings);
+          if (_userMarker.isEmpty) {
+            try {
+              newPosition = await Geolocator.getCurrentPosition().timeout(
+                const Duration(seconds: 5),
+                onTimeout: () {
+                  Fluttertoast.showToast(msg: "Location request timed out.");
+                  // ignore: null_argument_to_non_null_type
+                  return Future.value(null);
+                },
+              );
+            } catch (e) {
+              Fluttertoast.showToast(msg: "Error fetching location: $e");
+              newPosition = null;
+            }
+          } else {
+            newPosition = await Geolocator.getLastKnownPosition();
+            Fluttertoast.showToast(msg: "Last Known Location Used.");
+          }
         }
 
         if (newPosition != null) {

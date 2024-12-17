@@ -210,7 +210,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               PageRouteBuilder(
                                   pageBuilder: (context, animation,
                                           secondaryAnimation) =>
-                                      SignupScreen(),
+                                      const SignupScreen(),
                                   transitionsBuilder: (context, animation,
                                       secondaryAnimation, child) {
                                     const begin = Offset(1.0, 0.0);
