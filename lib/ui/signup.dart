@@ -258,7 +258,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Image.asset(
-                        "assets/logo/buyer.png",
+                        "assets/logo/buyer2.png",
                         height: 250,
                       ),
                       const SizedBox(
@@ -294,7 +294,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   children: [
                     Center(
                       child: Image.asset(
-                        "assets/logo/partner.png",
+                        "assets/logo/partner2.png",
                         height: 250,
                       ),
                     ),

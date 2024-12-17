@@ -81,7 +81,9 @@ flutter:
     - assets/logo/logo_filled.png
     - assets/logo/logo_cry_filled.png
     - assets/logo/partner.png
+    - assets/logo/partner2.png
     - assets/logo/buyer.png
+    - assets/logo/buyer2.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

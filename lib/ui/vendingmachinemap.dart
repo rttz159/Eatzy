@@ -107,10 +107,8 @@ class _VendingMachineMapState extends State<VendingMachineMap> {
                   builder: (context) {
                     return Container(
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.inversePrimary,
-                        border: Border.all(
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
+                        color: Theme.of(context).colorScheme.tertiaryContainer,
+                        borderRadius: BorderRadius.circular(12.0),
                       ),
                       child: const Padding(
                         padding: EdgeInsets.all(8.0),
@@ -141,8 +139,8 @@ class _VendingMachineMapState extends State<VendingMachineMap> {
     setState(() {
       _vendingMachineMarkers.add(
         Marker(
-          width: 100.0,
-          height: 150.0,
+          width: 150.0,
+          height: 100.0,
           alignment: Alignment.topCenter,
           point: LatLng(double.parse(vm.getLat), double.parse(vm.getLong)),
           child: Column(
@@ -160,21 +158,14 @@ class _VendingMachineMapState extends State<VendingMachineMap> {
                       ),
                       elevation: 20,
                       child: Padding(
-                        padding: const EdgeInsets.all(12.0),
+                        padding: const EdgeInsets.all(8),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Image.asset(
-                              "assets/logo/logo_filled.png",
-                              width: 15,
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
                             Center(
                               child: Text(
                                 vm.getDesc,
-                                style: const TextStyle(fontSize: 11),
+                                style: const TextStyle(fontSize: 10),
                               ),
                             )
                           ],
@@ -231,7 +222,7 @@ class _VendingMachineMapState extends State<VendingMachineMap> {
 
         if (newPosition != null) {
           _mapController.move(
-              LatLng(newPosition.latitude, newPosition.longitude), 18.0);
+              LatLng(newPosition.latitude, newPosition.longitude), 16.0);
           selectedLatLng = LatLng(newPosition.latitude, newPosition.longitude);
         }
 
@@ -274,6 +265,12 @@ class _VendingMachineMapState extends State<VendingMachineMap> {
     _loadData();
   }
 
+  @override
+  void dispose() {
+    _mapController.dispose();
+    super.dispose();
+  }
+
   Future<void> _loadData() async {
     setState(() {
       _isLoading = true;
@@ -292,146 +289,192 @@ class _VendingMachineMapState extends State<VendingMachineMap> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text("Select Vending Machine"),
-        ),
         body: Stack(
+      children: [
+        FlutterMap(
+          mapController: _mapController,
+          options: const MapOptions(
+            initialZoom: 16.0,
+            interactionOptions: InteractionOptions(
+                flags: InteractiveFlag.pinchZoom | InteractiveFlag.drag),
+          ),
           children: [
-            FlutterMap(
-              mapController: _mapController,
-              options: const MapOptions(
-                initialZoom: 16.0,
-                interactionOptions: InteractionOptions(
-                    flags: InteractiveFlag.pinchZoom | InteractiveFlag.drag),
-              ),
-              children: [
-                TileLayer(
-                  urlTemplate: (Theme.of(context).brightness == Brightness.dark)
-                      ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png"
-                      : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
-                ),
-                MarkerLayer(
-                  markers: _userMarker,
-                ),
-                MarkerLayer(
-                  markers: _vendingMachineMarkers,
-                ),
-              ],
+            TileLayer(
+              urlTemplate: (Theme.of(context).brightness == Brightness.dark)
+                  ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png"
+                  : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
             ),
-            Positioned(
-                top: 10,
-                left: 5,
-                right: 5,
-                child: SearchBar(
-                  padding: const WidgetStatePropertyAll<EdgeInsets>(
-                      EdgeInsets.symmetric(horizontal: 16.0)),
-                  onChanged: (String query) {
-                    _filterVendingMachines(query);
-                  },
-                  hintText: "Search...",
-                  leading: Icon(
-                    Icons.search,
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? Colors.white
-                        : Colors.grey,
-                  ),
-                  trailing: [
-                    IconButton(
-                        onPressed: getUserPosition,
-                        icon: Icon(
-                          Icons.location_searching,
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? Colors.white
-                              : Colors.grey,
-                        ))
-                  ],
-                )),
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
-                child: Container(
-                  color: Colors.black12,
-                  height: MediaQuery.of(context).size.height / 4,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: _filteredVendingMachine.isEmpty
-                        ? [
+            MarkerLayer(
+              markers: _userMarker,
+            ),
+            MarkerLayer(
+              markers: _vendingMachineMarkers,
+            ),
+          ],
+        ),
+        Positioned(
+            top: 80,
+            left: 5,
+            right: 5,
+            child: SearchBar(
+              padding: const WidgetStatePropertyAll<EdgeInsets>(
+                  EdgeInsets.symmetric(horizontal: 16.0)),
+              onChanged: (String query) {
+                _filterVendingMachines(query);
+              },
+              hintText: "Search...",
+              leading: Icon(
+                Icons.search,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.grey,
+              ),
+              trailing: [
+                IconButton(
+                    onPressed: getUserPosition,
+                    icon: Icon(
+                      Icons.location_searching,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.grey,
+                    ))
+              ],
+            )),
+        Positioned(
+          bottom: -10,
+          left: 0,
+          right: 0,
+          child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+              child: Container(
+                height: MediaQuery.of(context).size.height / 3,
+                color: Colors.transparent,
+                child: Card(
+                    elevation: 15,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                      child: ListView(
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 8.0, horizontal: 16.0),
+                            child: Text(
+                              "Results",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                            child: Text(
+                              "We found ${_filteredVendingMachine.length} vending machines for you.",
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ),
+                          if (_filteredVendingMachine.isEmpty)
                             SizedBox(
-                              width: 180,
                               child: Card(
-                                elevation: 15,
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Center(
-                                          child: Image.asset(
-                                            "assets/logo/logo_cry_filled.png",
-                                            height: 80,
-                                          ),
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Center(
+                                        child: Image.asset(
+                                          "assets/logo/logo_cry_filled.png",
+                                          height: 80,
                                         ),
-                                        const SizedBox(
-                                          height: 10,
-                                        ),
-                                        const Center(
-                                            child: Text("No result..")),
-                                      ]),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      const Center(child: Text("No result..")),
+                                    ],
+                                  ),
                                 ),
                               ),
                             )
-                          ]
-                        : List.generate(_filteredVendingMachine.length, (idx) {
-                            return SizedBox(
-                              width: 180,
-                              child: Card(
-                                elevation: 15,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
+                          else
+                            ...List.generate(_filteredVendingMachine.length,
+                                (idx) {
+                              return SizedBox(
+                                child: Card(
+                                  elevation: 10,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        Center(
-                                          child: Image.network(
-                                            _filteredVendingMachine[idx]
-                                                .getImageUrl!,
-                                            height: 80,
+                                        Flexible(
+                                          flex: 1,
+                                          child: Center(
+                                            child: Image.network(
+                                                _filteredVendingMachine[idx]
+                                                    .getImageUrl!,
+                                                height: 80,
+                                                width: 100,
+                                                fit: BoxFit.contain),
                                           ),
                                         ),
-                                        const SizedBox(
-                                          height: 10,
-                                        ),
-                                        Center(
-                                            child: Text(
+                                        const SizedBox(height: 10),
+                                        Flexible(
+                                          flex: 1,
+                                          child: Center(
+                                            child: SizedBox(
+                                              width: 120,
+                                              child: Text(
                                                 _filteredVendingMachine[idx]
-                                                    .getDesc)),
-                                        ElevatedButton(
-                                          onPressed: () {},
-                                          child: const Text("Details"),
-                                        )
-                                      ]),
+                                                    .getDesc,
+                                                textAlign: TextAlign.start,
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 3,
+                                                style: const TextStyle(
+                                                    fontSize: 14),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        Flexible(
+                                          flex: 1,
+                                          child: ElevatedButton(
+                                            onPressed: () {
+                                              final point = LatLng(
+                                                double.parse(
+                                                    _filteredVendingMachine[idx]
+                                                        .getLat),
+                                                double.parse(
+                                                    _filteredVendingMachine[idx]
+                                                        .getLong),
+                                              );
+                                              _mapController.move(point, 16.0);
+                                            },
+                                            child: const Text("Select"),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            );
-                          }),
-                  ),
-                ),
-              ),
+                              );
+                            }),
+                        ],
+                      ),
+                    )),
+              )),
+        ),
+        if (_isLoading)
+          Container(
+            color: Colors.black.withOpacity(0.5),
+            child: Center(
+              child: LoadingAnimationWidget.progressiveDots(
+                  color: Theme.of(context).primaryColor, size: 70),
             ),
-            if (_isLoading)
-              Container(
-                color: Colors.black.withOpacity(0.5),
-                child: Center(
-                  child: LoadingAnimationWidget.progressiveDots(
-                      color: Theme.of(context).primaryColor, size: 70),
-                ),
-              ),
-          ],
-        ));
+          ),
+      ],
+    ));
   }
 }
