@@ -15,6 +15,30 @@ class AuthService {
 
   set setCurrentUser(Users tempUser) => _currentUser = tempUser;
 
+  Future<void> _refreshTokenWithRetry() async {
+    int retryCount = 0;
+    const maxRetries = 3;
+
+    while (retryCount < maxRetries) {
+      try {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          await user.getIdToken(true);
+          print("Token refreshed successfully.");
+          break;
+        }
+      } catch (e) {
+        retryCount++;
+        print("Retry $retryCount failed: $e");
+        await Future.delayed(const Duration(seconds: 2));
+      }
+    }
+
+    if (retryCount == maxRetries) {
+      print("Failed to refresh token after $maxRetries attempts.");
+    }
+  }
+
   Future<String?> _signUp({
     required String email,
     required String password,
@@ -62,15 +86,17 @@ class AuthService {
     return true;
   }
 
-  Future<Users?> signIn(
-      {required String email,
-      required String password,
-      required BuildContext context}) async {
+  Future<Users?> signIn({
+    required String email,
+    required String password,
+    required BuildContext context,
+  }) async {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
       final user = _auth.currentUser;
-      String uid = user?.uid.toString() ?? "";
-      if (uid != "") {
+
+      if (user != null) {
+        String uid = user.uid;
         (Map<String, dynamic>?, bool?) tempUserData = await _db.getUser(uid);
         if (tempUserData.$1 == null) {
           Fluttertoast.showToast(msg: "No user found for that email.");
@@ -79,6 +105,7 @@ class AuthService {
         bool? tempBool = tempUserData.$2;
         final tempUser = tempUserData.$1;
         if (tempBool != null && tempUser != null) {
+          await _refreshTokenWithRetry();
           if (tempBool) {
             NormalUser tempNormalUser = NormalUser.fromJson(tempUser);
             return tempNormalUser;
@@ -88,6 +115,7 @@ class AuthService {
           }
         }
       }
+
       return null;
     } on FirebaseAuthException catch (e) {
       String message = e.message!;
@@ -96,7 +124,7 @@ class AuthService {
     }
   }
 
-  Future signOut(BuildContext context) async {
+  Future signOut() async {
     try {
       await _auth.signOut();
       Fluttertoast.showToast(msg: "Successfully logout.");

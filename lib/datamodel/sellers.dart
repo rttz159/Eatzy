@@ -11,6 +11,7 @@ class Sellers extends Users {
     required super.birthDate,
     required super.ic,
     required super.email,
+    super.imageUrl,
   });
 
   Sellers.withSubList({
@@ -21,6 +22,7 @@ class Sellers extends Users {
     required super.ic,
     required super.email,
     required this.subList,
+    super.imageUrl,
   });
 
   factory Sellers.fromJson(Map<String, dynamic> map) {
@@ -34,6 +36,7 @@ class Sellers extends Users {
       subList: map['subList'] != null
           ? List<String>.from(jsonDecode(map['subList'] as String))
           : null,
+      imageUrl: map['imageUrl'] as String?,
     );
   }
 
@@ -56,6 +59,7 @@ class Sellers extends Users {
       'ic': ic,
       'email': email,
       'subList': subList != null ? jsonEncode(subList) : null,
+      'imageUrl': imageUrl,
     };
   }
 }

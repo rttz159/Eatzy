@@ -13,6 +13,7 @@ class NormalUser extends Users {
     required super.ic,
     required super.email,
     required this.isSpecial,
+    super.imageUrl,
   });
 
   NormalUser.withVoucherList({
@@ -24,6 +25,7 @@ class NormalUser extends Users {
     required super.email,
     required this.isSpecial,
     required this.ownedVoucherId,
+    super.imageUrl,
   });
 
   factory NormalUser.fromJson(Map<String, dynamic> map) {
@@ -38,12 +40,15 @@ class NormalUser extends Users {
       ownedVoucherId: map['ownedVoucherId'] != null
           ? List<String>.from(jsonDecode(map['ownedVoucherId'] as String))
           : null,
+      imageUrl: map['imageUrl'] as String?,
     );
   }
 
   bool get getIsSpecial => isSpecial;
 
   List<String> get getOwnedVoucherId => ownedVoucherId ??= <String>[];
+
+  String? get getImageUrl => imageUrl;
 
   set setOwnedVoucherId(List<String> ownedVoucherId) {
     this.ownedVoucherId = ownedVoucherId;
@@ -58,6 +63,10 @@ class NormalUser extends Users {
     this.isSpecial = isSpecial;
   }
 
+  set setImageUrl(String? url) {
+    imageUrl = url;
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'uid': uid,
@@ -68,6 +77,7 @@ class NormalUser extends Users {
       'isSpecial': isSpecial ? 1 : 0,
       'ownedVoucherId':
           ownedVoucherId != null ? jsonEncode(ownedVoucherId) : null,
+      'imageUrl': imageUrl,
     };
   }
 }

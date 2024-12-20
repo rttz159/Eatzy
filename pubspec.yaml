@@ -52,6 +52,8 @@ dependencies:
   latlong2: any
   geolocator: any
   model_viewer_plus: any
+  provider: any
+  carousel_slider: any
 
 dev_dependencies:
   flutter_test:
@@ -85,6 +87,8 @@ flutter:
     - assets/logo/buyer.png
     - assets/logo/buyer2.png
     - assets/models/vendingMachine.glb
+    - assets/poster/poster.png
+    - assets/poster/poster2.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

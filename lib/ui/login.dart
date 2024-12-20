@@ -1,7 +1,9 @@
+import 'package:assignment/services/userprovider.dart';
 import 'package:assignment/ui/resetpassword.dart';
 import 'package:assignment/ui/signup.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 import '../services/auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -62,7 +64,10 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (user != null) {
+        final userprovider = Provider.of<UserProvider>(context, listen: false);
+        userprovider.setCurrentUser = user;
         _authService.setCurrentUser = user;
+        await userprovider.saveUserToLocalStorage();
         Fluttertoast.showToast(msg: "Login successful!");
       }
     }

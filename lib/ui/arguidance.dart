@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 
 class ArApp extends StatefulWidget {
-  ArApp({super.key});
+  const ArApp({super.key});
 
   @override
   State<ArApp> createState() => _ArAppState();
@@ -48,12 +48,10 @@ class _ArAppState extends State<ArApp> with SingleTickerProviderStateMixin {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Eatzy Vending Machine'),
-        backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
       ),
       body: Stack(
         children: [
-          ModelViewer(
-            backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+          const ModelViewer(
             src: 'assets/models/vendingMachine.glb',
             alt: 'A 3D model of Eatzy vending machine',
             autoRotate: false,

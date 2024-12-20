@@ -185,7 +185,19 @@ class _VendingMachineMapState extends State<VendingMachineMap> {
   }
 
   Future<void> getUserPosition() async {
-    Position? userPosition = await getPosition();
+    Position? userPosition;
+    if (_userMarker.isEmpty) {
+      userPosition = await getPosition();
+    } else {
+      userPosition = await Geolocator.getLastKnownPosition();
+      if (userPosition != null) {
+        _mapController.move(
+            LatLng(userPosition.latitude, userPosition.longitude), 16.0);
+        Fluttertoast.showToast(msg: "Last Known Location Used.");
+        return;
+      }
+    }
+
     if (userPosition == null) {
       Fluttertoast.showToast(msg: "Fail to locate the user.");
     } else {
@@ -214,23 +226,18 @@ class _VendingMachineMapState extends State<VendingMachineMap> {
           newPosition = await Geolocator.getLastKnownPosition();
           Fluttertoast.showToast(msg: "Last Known Location Used.");
         } else {
-          if (_userMarker.isEmpty) {
-            try {
-              newPosition = await Geolocator.getCurrentPosition().timeout(
-                const Duration(seconds: 5),
-                onTimeout: () {
-                  Fluttertoast.showToast(msg: "Location request timed out.");
-                  // ignore: null_argument_to_non_null_type
-                  return Future.value(null);
-                },
-              );
-            } catch (e) {
-              Fluttertoast.showToast(msg: "Error fetching location: $e");
-              newPosition = null;
-            }
-          } else {
-            newPosition = await Geolocator.getLastKnownPosition();
-            Fluttertoast.showToast(msg: "Last Known Location Used.");
+          try {
+            newPosition = await Geolocator.getCurrentPosition().timeout(
+              const Duration(seconds: 5),
+              onTimeout: () {
+                Fluttertoast.showToast(msg: "Location request timed out.");
+                // ignore: null_argument_to_non_null_type
+                return Future.value(null);
+              },
+            );
+          } catch (e) {
+            Fluttertoast.showToast(msg: "Error fetching location: $e");
+            newPosition = null;
           }
         }
 
@@ -302,193 +309,210 @@ class _VendingMachineMapState extends State<VendingMachineMap> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: Stack(
-      children: [
-        FlutterMap(
-          mapController: _mapController,
-          options: const MapOptions(
-            initialZoom: 16.0,
-            interactionOptions: InteractionOptions(
-                flags: InteractiveFlag.pinchZoom | InteractiveFlag.drag),
+    return SafeArea(
+      child: Scaffold(
+          appBar: AppBar(
+            title: const Text("Vending Machines"),
           ),
-          children: [
-            TileLayer(
-              urlTemplate: (Theme.of(context).brightness == Brightness.dark)
-                  ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png"
-                  : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
-            ),
-            MarkerLayer(
-              markers: _userMarker,
-            ),
-            MarkerLayer(
-              markers: _vendingMachineMarkers,
-            ),
-          ],
-        ),
-        Positioned(
-            top: 80,
-            left: 5,
-            right: 5,
-            child: SearchBar(
-              padding: const WidgetStatePropertyAll<EdgeInsets>(
-                  EdgeInsets.symmetric(horizontal: 16.0)),
-              onChanged: (String query) {
-                _filterVendingMachines(query);
-              },
-              hintText: "Search...",
-              leading: Icon(
-                Icons.search,
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.white
-                    : Colors.grey,
+          body: Stack(
+            children: [
+              FlutterMap(
+                mapController: _mapController,
+                options: const MapOptions(
+                  initialZoom: 16.0,
+                  interactionOptions: InteractionOptions(
+                      flags: InteractiveFlag.pinchZoom | InteractiveFlag.drag),
+                ),
+                children: [
+                  TileLayer(
+                    urlTemplate: (Theme.of(context).brightness ==
+                            Brightness.dark)
+                        ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png"
+                        : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+                  ),
+                  MarkerLayer(
+                    markers: _userMarker,
+                  ),
+                  MarkerLayer(
+                    markers: _vendingMachineMarkers,
+                  ),
+                ],
               ),
-              trailing: [
-                IconButton(
-                    onPressed: getUserPosition,
-                    icon: Icon(
-                      Icons.location_searching,
+              Positioned(
+                  top: 10,
+                  left: 5,
+                  right: 5,
+                  child: SearchBar(
+                    padding: const WidgetStatePropertyAll<EdgeInsets>(
+                        EdgeInsets.symmetric(horizontal: 16.0)),
+                    onChanged: (String query) {
+                      _filterVendingMachines(query);
+                    },
+                    hintText: "Search...",
+                    leading: Icon(
+                      Icons.search,
                       color: Theme.of(context).brightness == Brightness.dark
                           ? Colors.white
                           : Colors.grey,
-                    ))
-              ],
-            )),
-        Positioned(
-          bottom: -10,
-          left: 0,
-          right: 0,
-          child: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
-              child: Container(
-                height: MediaQuery.of(context).size.height / 3,
-                color: Colors.transparent,
-                child: Card(
-                    elevation: 15,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                      child: ListView(
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 8.0, horizontal: 16.0),
-                            child: Text(
-                              "Results",
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                            child: Text(
-                              "We found ${_filteredVendingMachine.length} vending machines for you.",
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.normal,
-                              ),
-                            ),
-                          ),
-                          if (_filteredVendingMachine.isEmpty)
-                            SizedBox(
-                              child: Card(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Center(
-                                        child: Image.asset(
-                                          "assets/logo/logo_cry_filled.png",
-                                          height: 80,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 10),
-                                      const Center(child: Text("No result..")),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            )
-                          else
-                            ...List.generate(_filteredVendingMachine.length,
-                                (idx) {
-                              return SizedBox(
-                                child: Card(
-                                  elevation: 10,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Flexible(
-                                          flex: 1,
-                                          child: Center(
-                                            child: Image.network(
-                                                _filteredVendingMachine[idx]
-                                                    .getImageUrl!,
-                                                height: 80,
-                                                width: 100,
-                                                fit: BoxFit.contain),
-                                          ),
-                                        ),
-                                        const SizedBox(height: 10),
-                                        Flexible(
-                                          flex: 1,
-                                          child: Center(
-                                            child: SizedBox(
-                                              width: 120,
-                                              child: Text(
-                                                _filteredVendingMachine[idx]
-                                                    .getDesc,
-                                                textAlign: TextAlign.start,
-                                                overflow: TextOverflow.ellipsis,
-                                                maxLines: 3,
-                                                style: const TextStyle(
-                                                    fontSize: 14),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        Flexible(
-                                          flex: 1,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              final point = LatLng(
-                                                double.parse(
-                                                    _filteredVendingMachine[idx]
-                                                        .getLat),
-                                                double.parse(
-                                                    _filteredVendingMachine[idx]
-                                                        .getLong),
-                                              );
-                                              _mapController.move(point, 16.0);
-                                            },
-                                            child: const Text("Select"),
-                                          ),
-                                        ),
-                                      ],
+                    ),
+                    trailing: [
+                      IconButton(
+                          onPressed: getUserPosition,
+                          icon: Icon(
+                            Icons.location_searching,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.grey,
+                          ))
+                    ],
+                  )),
+              Positioned(
+                bottom: -10,
+                left: 0,
+                right: 0,
+                child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+                    child: Container(
+                      height: MediaQuery.of(context).size.height / 3,
+                      color: Colors.transparent,
+                      child: Card(
+                          elevation: 15,
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                            child: ListView(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 8.0, horizontal: 16.0),
+                                  child: Text(
+                                    "Results",
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ),
-                              );
-                            }),
-                        ],
-                      ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                                  child: Text(
+                                    "We found ${_filteredVendingMachine.length} vending machines for you.",
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.normal,
+                                    ),
+                                  ),
+                                ),
+                                if (_filteredVendingMachine.isEmpty)
+                                  SizedBox(
+                                    child: Card(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Center(
+                                              child: Image.asset(
+                                                "assets/logo/logo_cry_filled.png",
+                                                height: 80,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 10),
+                                            const Center(
+                                                child: Text("No result..")),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                else
+                                  ...List.generate(
+                                      _filteredVendingMachine.length, (idx) {
+                                    return SizedBox(
+                                      child: Card(
+                                        elevation: 10,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Flexible(
+                                                flex: 1,
+                                                child: Center(
+                                                  child: Image.network(
+                                                      _filteredVendingMachine[
+                                                              idx]
+                                                          .getImageUrl!,
+                                                      height: 80,
+                                                      width: 100,
+                                                      fit: BoxFit.contain),
+                                                ),
+                                              ),
+                                              const SizedBox(height: 10),
+                                              Flexible(
+                                                flex: 1,
+                                                child: Center(
+                                                  child: SizedBox(
+                                                    width: 120,
+                                                    child: Text(
+                                                      _filteredVendingMachine[
+                                                              idx]
+                                                          .getDesc,
+                                                      textAlign:
+                                                          TextAlign.start,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      maxLines: 3,
+                                                      style: const TextStyle(
+                                                          fontSize: 14),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              Flexible(
+                                                flex: 1,
+                                                child: ElevatedButton(
+                                                  onPressed: () {
+                                                    final point = LatLng(
+                                                      double.parse(
+                                                          _filteredVendingMachine[
+                                                                  idx]
+                                                              .getLat),
+                                                      double.parse(
+                                                          _filteredVendingMachine[
+                                                                  idx]
+                                                              .getLong),
+                                                    );
+                                                    _mapController.move(
+                                                        point, 16.0);
+                                                  },
+                                                  child: const Text("Select"),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  }),
+                              ],
+                            ),
+                          )),
                     )),
-              )),
-        ),
-        if (_isLoading)
-          Container(
-            color: Colors.black.withOpacity(0.5),
-            child: Center(
-              child: LoadingAnimationWidget.progressiveDots(
-                  color: Theme.of(context).primaryColor, size: 70),
-            ),
-          ),
-      ],
-    ));
+              ),
+              if (_isLoading)
+                Container(
+                  color: Colors.black.withOpacity(0.5),
+                  child: Center(
+                    child: LoadingAnimationWidget.progressiveDots(
+                        color: Theme.of(context).primaryColor, size: 70),
+                  ),
+                ),
+            ],
+          )),
+    );
   }
 }

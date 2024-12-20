@@ -5,6 +5,7 @@ abstract class Users {
   late String birthDate;
   late String ic;
   late String email;
+  late String? imageUrl;
 
   Users({
     required this.id,
@@ -13,6 +14,7 @@ abstract class Users {
     required this.birthDate,
     required this.ic,
     required this.email,
+    this.imageUrl,
   });
 
   String? get getId => id;
@@ -26,6 +28,8 @@ abstract class Users {
   String? get getUid => uid;
 
   String get getEmail => email;
+
+  String? get getImageUrl => imageUrl;
 
   set setUid(String uid) {
     this.uid = uid;
@@ -53,5 +57,9 @@ abstract class Users {
 
   set setEmail(String email) {
     this.email = email;
+  }
+
+  set setImageUrl(String? url) {
+    imageUrl = url;
   }
 }

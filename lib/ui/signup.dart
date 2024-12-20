@@ -1,10 +1,12 @@
 import 'package:assignment/datamodel/sellers.dart';
+import 'package:assignment/services/userprovider.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../services/auth.dart';
 import '../datamodel/normalusers.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -131,6 +133,9 @@ class _SignupScreenState extends State<SignupScreen> {
       );
 
       if (success) {
+        final userprovider = Provider.of<UserProvider>(context, listen: false);
+        userprovider.setCurrentUser = _authService.getCurrentUser!;
+        await userprovider.saveUserToLocalStorage();
         Navigator.pop(context);
       }
     }
@@ -221,6 +226,9 @@ class _SignupScreenState extends State<SignupScreen> {
       );
 
       if (success) {
+        final userprovider = Provider.of<UserProvider>(context, listen: false);
+        userprovider.setCurrentUser = _authService.getCurrentUser!;
+        await userprovider.saveUserToLocalStorage();
         Navigator.pop(context);
       }
     }
@@ -355,6 +363,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   const SizedBox(height: 20),
                   TextField(
                     controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
                         labelText: "Email", errorText: emailErrorText),
                   ),
@@ -390,6 +399,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   const SizedBox(height: 20),
                   TextField(
                     controller: _icController,
+                    keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                         labelText: "IC",
                         hintText: "12 digits without separators",
@@ -474,6 +484,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   const SizedBox(height: 20),
                   TextField(
                     controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
                         labelText: "Email", errorText: emailErrorText),
                   ),
@@ -509,6 +520,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   const SizedBox(height: 20),
                   TextField(
                     controller: _icController,
+                    keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                         labelText: "IC",
                         hintText: "12 digits without separators",
