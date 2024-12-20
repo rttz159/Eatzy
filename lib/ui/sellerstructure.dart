@@ -1,19 +1,19 @@
-import 'package:assignment/services/userpageprovider.dart';
+import 'package:assignment/services/sellerpageprovider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class UserStructure extends StatefulWidget {
-  const UserStructure({super.key});
+class SellerStructure extends StatefulWidget {
+  const SellerStructure({super.key});
 
   @override
-  State<UserStructure> createState() => _UserStructureState();
+  State<SellerStructure> createState() => _SellerStructureState();
 }
 
-class _UserStructureState extends State<UserStructure> {
+class _SellerStructureState extends State<SellerStructure> {
   @override
   Widget build(BuildContext context) {
-    return Consumer<UserPageProvider>(
-      builder: (BuildContext context, UserPageProvider value, Widget? child) {
+    return Consumer<SellerPageProvider>(
+      builder: (BuildContext context, SellerPageProvider value, Widget? child) {
         return Scaffold(
           body: PageView(
             controller: value.pageController,
@@ -25,9 +25,9 @@ class _UserStructureState extends State<UserStructure> {
             items: const [
               BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
               BottomNavigationBarItem(
-                  icon: Icon(Icons.list_rounded), label: "Order"),
+                  icon: Icon(Icons.menu_sharp), label: "Products"),
               BottomNavigationBarItem(
-                  icon: Icon(Icons.discount_outlined), label: "Voucher"),
+                  icon: Icon(Icons.analytics_outlined), label: "Analytics"),
               BottomNavigationBarItem(
                   icon: Icon(Icons.account_circle_rounded), label: "Account"),
             ],

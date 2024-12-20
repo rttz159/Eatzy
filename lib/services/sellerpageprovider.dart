@@ -1,12 +1,13 @@
-import 'package:assignment/ui/userhomepage.dart';
+import 'package:assignment/ui/selleraccmanager.dart';
+import 'package:assignment/ui/sellerhomepage.dart';
 import 'package:flutter/material.dart';
 
-class PageProvider extends ChangeNotifier {
+class SellerPageProvider extends ChangeNotifier {
   final PageController _pageController = PageController();
   int _selectedTab = 0;
   final List<Widget> _pages = [
     const Center(
-      child: UserHomePage(),
+      child: SellerHomePage(),
     ),
     const Center(
       child: Text("Orders"),
@@ -15,7 +16,7 @@ class PageProvider extends ChangeNotifier {
       child: Text("Voucher"),
     ),
     const Center(
-      child: Text("Account"),
+      child: SellerAccManager(),
     ),
   ];
 

@@ -5,14 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
-class UserHomePage extends StatefulWidget {
-  const UserHomePage({super.key});
+class SellerHomePage extends StatefulWidget {
+  const SellerHomePage({super.key});
 
   @override
-  State<UserHomePage> createState() => _UserHomePageState();
+  State<SellerHomePage> createState() => _SellerHomePageState();
 }
 
-class _UserHomePageState extends State<UserHomePage> {
+class _SellerHomePageState extends State<SellerHomePage> {
   String determineGreeting() {
     final hour = DateTime.now().hour;
 
@@ -53,7 +53,7 @@ class _UserHomePageState extends State<UserHomePage> {
               Expanded(
                 child: ElevatedButton.icon(
                   icon: const Icon(
-                    Icons.list,
+                    Icons.menu,
                     color: Colors.black,
                   ),
                   onPressed: () => Navigator.push(
@@ -92,7 +92,7 @@ class _UserHomePageState extends State<UserHomePage> {
                     ),
                   ),
                   label: const Text(
-                    "Make Order",
+                    "Subscriptions",
                     style: TextStyle(color: Colors.black, fontSize: 17),
                   ),
                 ),
@@ -103,7 +103,7 @@ class _UserHomePageState extends State<UserHomePage> {
               Expanded(
                 child: ElevatedButton.icon(
                   icon: const Icon(
-                    Icons.receipt_long,
+                    Icons.discount_outlined,
                     color: Colors.black,
                   ),
                   onPressed: () {
@@ -126,7 +126,7 @@ class _UserHomePageState extends State<UserHomePage> {
                     ),
                   ),
                   label: const Text(
-                    "My Order",
+                    "Your Voucher",
                     style: TextStyle(color: Colors.black, fontSize: 17),
                   ),
                 ),
