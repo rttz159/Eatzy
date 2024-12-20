@@ -38,7 +38,16 @@ class HelpCenterPage extends StatelessWidget {
       body: Container(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
-        color: Theme.of(context).colorScheme.tertiaryContainer,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Theme.of(context).appBarTheme.backgroundColor!,
+              Theme.of(context).colorScheme.tertiaryContainer
+            ],
+          ),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(32.0),
           child: Column(
