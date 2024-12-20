@@ -1,4 +1,6 @@
 import 'package:assignment/services/userprovider.dart';
+import 'package:assignment/ui/feedback.dart';
+import 'package:assignment/ui/helpcentre.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -163,7 +165,27 @@ class _UserAccManagerState extends State<UserAccManager> {
                         ),
                       ),
                       child: ListTile(
-                        onTap: () {},
+                        onTap: () => Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                              pageBuilder:
+                                  (context, animation, secondaryAnimation) =>
+                                      const HelpCenterPage(),
+                              transitionsBuilder: (context, animation,
+                                  secondaryAnimation, child) {
+                                const begin = Offset(1.0, 0.0);
+                                const end = Offset.zero;
+                                const curve = Curves.ease;
+
+                                var tween = Tween(begin: begin, end: end)
+                                    .chain(CurveTween(curve: curve));
+
+                                return SlideTransition(
+                                  position: animation.drive(tween),
+                                  child: child,
+                                );
+                              }),
+                        ),
                         title: const Text(
                           "Help Centre",
                           style: TextStyle(
@@ -187,7 +209,27 @@ class _UserAccManagerState extends State<UserAccManager> {
                         ),
                       ),
                       child: ListTile(
-                        onTap: () {},
+                        onTap: () => Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                              pageBuilder:
+                                  (context, animation, secondaryAnimation) =>
+                                      const FeedbackPage(),
+                              transitionsBuilder: (context, animation,
+                                  secondaryAnimation, child) {
+                                const begin = Offset(1.0, 0.0);
+                                const end = Offset.zero;
+                                const curve = Curves.ease;
+
+                                var tween = Tween(begin: begin, end: end)
+                                    .chain(CurveTween(curve: curve));
+
+                                return SlideTransition(
+                                  position: animation.drive(tween),
+                                  child: child,
+                                );
+                              }),
+                        ),
                         title: const Text(
                           "Feedback",
                           style: TextStyle(

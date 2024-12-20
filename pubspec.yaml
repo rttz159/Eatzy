@@ -54,6 +54,7 @@ dependencies:
   model_viewer_plus: any
   provider: any
   carousel_slider: any
+  flutter_email_sender: any
 
 dev_dependencies:
   flutter_test:
