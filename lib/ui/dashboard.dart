@@ -1,9 +1,10 @@
-import 'package:assignment/services/pageprovider.dart';
+import 'package:assignment/services/sellerpageprovider.dart';
+import 'package:assignment/services/userpageprovider.dart';
 import 'package:assignment/services/userprovider.dart';
 import 'package:assignment/ui/login.dart';
+import 'package:assignment/ui/sellerstructure.dart';
 import 'package:assignment/ui/userstructure.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 class Dashboard extends StatefulWidget {
@@ -41,16 +42,19 @@ class _DashboardState extends State<Dashboard> {
       bool? tempSeller = userprovider.isSeller;
       if (tempSeller != null) {
         if (tempSeller) {
-          tempWidget = const Text("Seller");
+          tempWidget = ChangeNotifierProvider(
+              create: (BuildContext context) {
+                return SellerPageProvider();
+              },
+              child: const SellerStructure());
         } else {
           tempWidget = ChangeNotifierProvider(
               create: (BuildContext context) {
-                return PageProvider();
+                return UserPageProvider();
               },
               child: const UserStructure());
         }
       }
-      Fluttertoast.showToast(msg: "Logged in with cached user.");
       return tempWidget;
     }
   }

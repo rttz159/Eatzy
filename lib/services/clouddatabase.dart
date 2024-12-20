@@ -95,19 +95,22 @@ class CloudDatabase {
   // Get the user
   Future<(Map<String, dynamic>?, bool?)> getUser(String uid) async {
     try {
-      final docSnapshot = await _firestore
+      final normalUserSnapshot = await _firestore
           .collection(CloudDatabase.normalUsers)
           .where('uid', isEqualTo: uid)
           .get();
-      if (docSnapshot.docs.isNotEmpty) {
-        return (docSnapshot.docs[0].data(), true);
-      }
-      final docSnapshot2 = await _firestore
+
+      final sellerSnapshot = await _firestore
           .collection(CloudDatabase.seller)
           .where('uid', isEqualTo: uid)
           .get();
-      if (docSnapshot2.docs.isNotEmpty) {
-        return (docSnapshot.docs[0].data(), false);
+
+      if (normalUserSnapshot.docs.isNotEmpty) {
+        return (normalUserSnapshot.docs[0].data(), true);
+      }
+
+      if (sellerSnapshot.docs.isNotEmpty) {
+        return (sellerSnapshot.docs[0].data(), false);
       }
       return (null, null);
     } catch (e) {

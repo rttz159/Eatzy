@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import '../services/auth.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -21,8 +22,12 @@ class _LoginScreenState extends State<LoginScreen> {
   String? emailErrorText;
   String? passwordErrorText;
   bool passwordVisible = true;
+  bool isLoading = false;
 
   Future<void> _handleLogin() async {
+    setState(() {
+      isLoading = true;
+    });
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
 
@@ -35,7 +40,6 @@ class _LoginScreenState extends State<LoginScreen> {
         emailErrorText = "Invalid Email";
       });
       Fluttertoast.showToast(msg: "Invalid Email");
-      return;
     } else {
       setState(() {
         emailErrorText = null;
@@ -49,7 +53,6 @@ class _LoginScreenState extends State<LoginScreen> {
       Fluttertoast.showToast(
           msg:
               "Invalid Password (more than 6 characters with at least one digit, one character and one special character)");
-      return;
     } else {
       setState(() {
         passwordErrorText = null;
@@ -63,6 +66,10 @@ class _LoginScreenState extends State<LoginScreen> {
         context: context,
       );
 
+      setState(() {
+        isLoading = false;
+      });
+
       if (user != null) {
         final userprovider = Provider.of<UserProvider>(context, listen: false);
         userprovider.setCurrentUser = user;
@@ -70,6 +77,10 @@ class _LoginScreenState extends State<LoginScreen> {
         await userprovider.saveUserToLocalStorage();
         Fluttertoast.showToast(msg: "Login successful!");
       }
+    } else {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -171,17 +182,22 @@ class _LoginScreenState extends State<LoginScreen> {
                               obscureText: passwordVisible,
                             ),
                             const SizedBox(height: 20),
-                            ElevatedButton(
-                              onPressed: _handleLogin,
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 12, horizontal: 32),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12)),
-                                elevation: 5,
-                              ),
-                              child: const Text("Login"),
-                            ),
+                            isLoading
+                                ? LoadingAnimationWidget.staggeredDotsWave(
+                                    color: Theme.of(context).primaryColor,
+                                    size: 20)
+                                : ElevatedButton(
+                                    onPressed: _handleLogin,
+                                    style: ElevatedButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 12, horizontal: 32),
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12)),
+                                      elevation: 5,
+                                    ),
+                                    child: const Text("Login"),
+                                  ),
                           ],
                         ),
                       ),

@@ -3,6 +3,7 @@ import 'package:assignment/services/userprovider.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import '../services/auth.dart';
 import '../datamodel/normalusers.dart';
 import 'package:intl/intl.dart';
@@ -30,6 +31,7 @@ class _SignupScreenState extends State<SignupScreen> {
   String? birthDateErrorText;
   bool? selectedType;
   bool passwordVisible = true;
+  bool isLoading = false;
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -48,6 +50,9 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   Future<void> _handleSignupNormalUser() async {
+    setState(() {
+      isLoading = true;
+    });
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
     String name = _nameController.text.trim();
@@ -132,16 +137,27 @@ class _SignupScreenState extends State<SignupScreen> {
         context: context,
       );
 
+      setState(() {
+        isLoading = false;
+      });
+
       if (success) {
         final userprovider = Provider.of<UserProvider>(context, listen: false);
         userprovider.setCurrentUser = _authService.getCurrentUser!;
         await userprovider.saveUserToLocalStorage();
         Navigator.pop(context);
       }
+    } else {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
   Future<void> _handleSignupSeller() async {
+    setState(() {
+      isLoading = true;
+    });
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
     String name = _nameController.text.trim();
@@ -225,12 +241,20 @@ class _SignupScreenState extends State<SignupScreen> {
         context: context,
       );
 
+      setState(() {
+        isLoading = false;
+      });
+
       if (success) {
         final userprovider = Provider.of<UserProvider>(context, listen: false);
         userprovider.setCurrentUser = _authService.getCurrentUser!;
         await userprovider.saveUserToLocalStorage();
         Navigator.pop(context);
       }
+    } else {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -424,17 +448,20 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: _handleSignupNormalUser,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 12, horizontal: 32),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                      elevation: 5,
-                    ),
-                    child: const Text("Sign Up"),
-                  ),
+                  isLoading
+                      ? LoadingAnimationWidget.staggeredDotsWave(
+                          color: Theme.of(context).primaryColor, size: 20)
+                      : ElevatedButton(
+                          onPressed: _handleSignupNormalUser,
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 12, horizontal: 32),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12)),
+                            elevation: 5,
+                          ),
+                          child: const Text("Sign Up"),
+                        ),
                 ],
               ),
             ),
@@ -545,17 +572,20 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: _handleSignupSeller,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 12, horizontal: 32),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                      elevation: 5,
-                    ),
-                    child: const Text("Sign Up"),
-                  ),
+                  isLoading
+                      ? LoadingAnimationWidget.staggeredDotsWave(
+                          color: Theme.of(context).primaryColor, size: 20)
+                      : ElevatedButton(
+                          onPressed: _handleSignupSeller,
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 12, horizontal: 32),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12)),
+                            elevation: 5,
+                          ),
+                          child: const Text("Sign Up"),
+                        ),
                 ],
               ),
             ),
