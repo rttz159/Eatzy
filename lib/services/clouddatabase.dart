@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'dart:io';
 
 class CloudDatabase {
   static final CloudDatabase _instance = CloudDatabase._();
@@ -27,16 +26,10 @@ class CloudDatabase {
 
   // Create or Update Product (with image upload)
   Future<bool> save(String collection, Map<String, dynamic> data,
-      {String? docId, File? imageFile}) async {
+      {String? docId}) async {
     try {
       if (data.isEmpty) {
         throw Exception("Cannot save empty data.");
-      }
-
-      if (imageFile != null) {
-        String imageUrl = await _uploadImageToStorage(imageFile);
-
-        data['imageUrl'] = imageUrl;
       }
 
       if (docId != null) {
@@ -51,21 +44,6 @@ class CloudDatabase {
       }
     } catch (e) {
       throw Exception("Failed to save data: $e");
-    }
-  }
-
-  // Helper method to upload image to Firebase Storage
-  Future<String> _uploadImageToStorage(File imageFile) async {
-    try {
-      String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-      Reference ref = _firebaseStorage.ref().child('products_images/$fileName');
-
-      await ref.putFile(imageFile);
-
-      String imageUrl = await ref.getDownloadURL();
-      return imageUrl;
-    } catch (e) {
-      throw Exception("Failed to upload image: $e");
     }
   }
 
@@ -106,11 +84,18 @@ class CloudDatabase {
           .get();
 
       if (normalUserSnapshot.docs.isNotEmpty) {
-        return (normalUserSnapshot.docs[0].data(), true);
+        return (
+          normalUserSnapshot.docs[0].data()
+            ..['id'] = normalUserSnapshot.docs[0].id,
+          true
+        );
       }
 
       if (sellerSnapshot.docs.isNotEmpty) {
-        return (sellerSnapshot.docs[0].data(), false);
+        return (
+          sellerSnapshot.docs[0].data()..['id'] = sellerSnapshot.docs[0].id,
+          false
+        );
       }
       return (null, null);
     } catch (e) {

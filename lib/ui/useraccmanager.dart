@@ -1,6 +1,7 @@
 import 'package:assignment/services/userprovider.dart';
 import 'package:assignment/ui/feedback.dart';
 import 'package:assignment/ui/helpcentre.dart';
+import 'package:assignment/ui/setting.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -121,8 +122,6 @@ class _UserAccManagerState extends State<UserAccManager> {
                     Container(
                       decoration: BoxDecoration(
                         border: Border(
-                          top: BorderSide(
-                              color: Theme.of(context).dividerColor, width: 1),
                           bottom: BorderSide(
                               color: Theme.of(context).dividerColor, width: 1),
                         ),
@@ -202,8 +201,6 @@ class _UserAccManagerState extends State<UserAccManager> {
                     Container(
                       decoration: BoxDecoration(
                         border: Border(
-                          top: BorderSide(
-                              color: Theme.of(context).dividerColor, width: 1),
                           bottom: BorderSide(
                               color: Theme.of(context).dividerColor, width: 1),
                         ),
@@ -246,14 +243,32 @@ class _UserAccManagerState extends State<UserAccManager> {
                     Container(
                       decoration: BoxDecoration(
                         border: Border(
-                          top: BorderSide(
-                              color: Theme.of(context).dividerColor, width: 1),
                           bottom: BorderSide(
                               color: Theme.of(context).dividerColor, width: 1),
                         ),
                       ),
                       child: ListTile(
-                        onTap: () {},
+                        onTap: () => Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                              pageBuilder:
+                                  (context, animation, secondaryAnimation) =>
+                                      const SettingPage(),
+                              transitionsBuilder: (context, animation,
+                                  secondaryAnimation, child) {
+                                const begin = Offset(1.0, 0.0);
+                                const end = Offset.zero;
+                                const curve = Curves.ease;
+
+                                var tween = Tween(begin: begin, end: end)
+                                    .chain(CurveTween(curve: curve));
+
+                                return SlideTransition(
+                                  position: animation.drive(tween),
+                                  child: child,
+                                );
+                              }),
+                        ),
                         title: const Text(
                           "Settings",
                           style: TextStyle(
@@ -270,8 +285,6 @@ class _UserAccManagerState extends State<UserAccManager> {
                     Container(
                       decoration: BoxDecoration(
                         border: Border(
-                          top: BorderSide(
-                              color: Theme.of(context).dividerColor, width: 1),
                           bottom: BorderSide(
                               color: Theme.of(context).dividerColor, width: 1),
                         ),

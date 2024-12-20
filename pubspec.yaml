@@ -55,6 +55,7 @@ dependencies:
   provider: any
   carousel_slider: any
   flutter_email_sender: any
+  image_picker: any
 
 dev_dependencies:
   flutter_test:
@@ -90,6 +91,8 @@ flutter:
     - assets/models/vendingMachine.glb
     - assets/poster/poster.png
     - assets/poster/poster2.png
+    - assets/logo/profile_setting.png
+    - assets/logo/reset_password.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
