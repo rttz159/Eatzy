@@ -1,4 +1,5 @@
 import 'package:assignment/datamodel/normalusers.dart';
+import 'package:assignment/datamodel/sellers.dart';
 import 'package:assignment/services/clouddatabase.dart';
 import 'package:assignment/services/userprovider.dart';
 import 'package:flutter/material.dart';
@@ -131,12 +132,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
         currentUser.setImageUrl = _selectedImageUrl;
       }
 
-      print((currentUser as NormalUser).toJson());
-      print(currentUser.getId);
-
-      await db.save(
-          CloudDatabase.normalUsers, (currentUser as NormalUser).toJson(),
-          docId: currentUser.getId);
+      if (currentUser is NormalUser) {
+        await db.save(
+            CloudDatabase.normalUsers, (currentUser as NormalUser).toJson(),
+            docId: currentUser.getId);
+      } else {
+        await db.save(CloudDatabase.seller, (currentUser as Sellers).toJson(),
+            docId: currentUser.getId);
+      }
 
       Fluttertoast.showToast(msg: "Profile updated successfully.");
       showDialog(
