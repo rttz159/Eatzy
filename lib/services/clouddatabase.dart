@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 
 class CloudDatabase {
   static final CloudDatabase _instance = CloudDatabase._();
@@ -11,14 +10,11 @@ class CloudDatabase {
   factory CloudDatabase() => _instance;
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
 
   static const String products = "products";
-  static const String notifications = "notifications";
   static const String purchaseHistory = "purchasehistory";
   static const String normalUsers = "normalusers";
   static const String seller = "sellers";
-  static const String subscription = "subscription";
   static const String vendingMachine = "vendingmachine";
   static const String voucher = "voucher";
 

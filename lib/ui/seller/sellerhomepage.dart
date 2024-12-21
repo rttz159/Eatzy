@@ -92,7 +92,7 @@ class _SellerHomePageState extends State<SellerHomePage> {
                     ),
                   ),
                   label: const Text(
-                    "Subscriptions",
+                    "Subscribe",
                     style: TextStyle(color: Colors.black, fontSize: 17),
                   ),
                 ),

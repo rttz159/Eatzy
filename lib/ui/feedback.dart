@@ -23,7 +23,6 @@ class _FeedbackPageState extends State<FeedbackPage> {
     try {
       await FlutterEmailSender.send(email);
       Fluttertoast.showToast(msg: 'feedback sent successfully!');
-      ;
     } catch (error) {
       print('Error: $error');
       Fluttertoast.showToast(msg: 'Error sending feedback');

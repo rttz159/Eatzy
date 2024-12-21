@@ -1,8 +1,8 @@
 class PurchaseHistory {
   late String? id;
   late String userId;
-  int? voucherId;
-  late int prodId;
+  String? voucherId;
+  late String prodId;
   late int qty;
   late String purchaseDate;
 
@@ -18,9 +18,9 @@ class PurchaseHistory {
     return PurchaseHistory(
       id: map['id'] as String,
       userId: map['userId'] as String,
-      prodId: map['prodId'] as int,
+      prodId: map['prodId'] as String,
       qty: map['qty'] as int,
-      voucherId: map['voucherId'] as int,
+      voucherId: map['voucherId'] as String,
       purchaseDate: map['purchaseDate'] as String,
     );
   }
@@ -29,9 +29,9 @@ class PurchaseHistory {
 
   String get getUserId => userId;
 
-  int get getVoucherId => voucherId ??= -1;
+  String? get getVoucherId => voucherId;
 
-  int get getProdID => prodId;
+  String get getProdID => prodId;
 
   int get getQty => qty;
 
@@ -45,11 +45,11 @@ class PurchaseHistory {
     this.userId = userId;
   }
 
-  set setVoucherId(int? voucherId) {
+  set setVoucherId(String? voucherId) {
     this.voucherId = voucherId;
   }
 
-  set setProdID(int prodId) {
+  set setProdID(String prodId) {
     this.prodId = prodId;
   }
 

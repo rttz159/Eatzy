@@ -1,8 +1,10 @@
+import 'package:assignment/datamodel/subscription.dart';
+
 import 'users.dart';
 import 'dart:convert';
 
 class Sellers extends Users {
-  List<String>? subList;
+  List<Subscription>? subscriptions;
 
   Sellers({
     required super.id,
@@ -11,44 +13,37 @@ class Sellers extends Users {
     required super.birthDate,
     required super.ic,
     required super.email,
-    super.imageUrl,
-  });
-
-  Sellers.withSubList({
-    required super.id,
-    required super.uid,
-    required super.name,
-    required super.birthDate,
-    required super.ic,
-    required super.email,
-    required this.subList,
+    this.subscriptions,
     super.imageUrl,
   });
 
   factory Sellers.fromJson(Map<String, dynamic> map) {
-    return Sellers.withSubList(
+    return Sellers(
       id: map['id'] as String?,
       uid: map['uid'] as String?,
       name: map['name'] as String,
       birthDate: map['birthDate'] as String,
       ic: map['ic'] as String,
       email: map['email'] as String,
-      subList: map['subList'] != null
-          ? List<String>.from(jsonDecode(map['subList'] as String))
+      subscriptions: map['subscriptions'] != null
+          ? (jsonDecode(map['subscriptions']) as List)
+              .map((subMap) =>
+                  Subscription.fromJson(subMap as Map<String, dynamic>))
+              .toList()
           : null,
       imageUrl: map['imageUrl'] as String?,
     );
   }
 
-  List<String> get getSubList => subList ??= <String>[];
+  List<Subscription> get getSubscriptions => subscriptions ??= <Subscription>[];
 
-  set setSubList(List<String> subList) {
-    this.subList = subList;
+  set setSubscriptions(List<Subscription> subs) {
+    subscriptions = subs;
   }
 
-  void addSubToList(String subId) {
-    subList ??= <String>[];
-    subList?.add(subId);
+  void addSubscription(Subscription subscription) {
+    subscriptions ??= <Subscription>[];
+    subscriptions?.add(subscription);
   }
 
   Map<String, dynamic> toJson() {
@@ -58,7 +53,9 @@ class Sellers extends Users {
       'birthDate': birthDate,
       'ic': ic,
       'email': email,
-      'subList': subList != null ? jsonEncode(subList) : null,
+      'subscriptions': subscriptions != null
+          ? jsonEncode(subscriptions!.map((sub) => sub.toJson()).toList())
+          : null,
       'imageUrl': imageUrl,
     };
   }

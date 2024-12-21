@@ -1,5 +1,6 @@
-import 'package:assignment/ui/selleraccmanager.dart';
-import 'package:assignment/ui/sellerhomepage.dart';
+import 'package:assignment/ui/seller/selleraccmanager.dart';
+import 'package:assignment/ui/seller/sellerhomepage.dart';
+import 'package:assignment/ui/seller/subscriptions.dart';
 import 'package:flutter/material.dart';
 
 class SellerPageProvider extends ChangeNotifier {
@@ -10,7 +11,7 @@ class SellerPageProvider extends ChangeNotifier {
       child: SellerHomePage(),
     ),
     const Center(
-      child: Text("Orders"),
+      child: SubscriptionPage(),
     ),
     const Center(
       child: Text("Voucher"),

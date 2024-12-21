@@ -4,7 +4,7 @@ class Products {
   late double sellingPrice;
   late double costPrice;
   late int qty;
-  late int subId;
+  late String subId;
   late String? imageUrl;
 
   Products({
@@ -24,7 +24,7 @@ class Products {
       sellingPrice: map['sellingPrice'] as double,
       costPrice: map['costPrice'] as double,
       qty: map['qty'] as int,
-      subId: map['subId'] as int,
+      subId: map['subId'] as String,
       imageUrl: map['imageUrl'] as String?,
     );
   }
@@ -34,7 +34,7 @@ class Products {
   double get getSellingPrice => sellingPrice;
   double get getCostPrice => costPrice;
   int get getQty => qty;
-  int get getSubId => subId;
+  String get getSubId => subId;
   String? get getImageUrl => imageUrl;
 
   set setId(String value) => id = value;
@@ -42,11 +42,12 @@ class Products {
   set setSellingPrice(double value) => sellingPrice = value;
   set setCostPrice(double value) => costPrice = value;
   set setQty(int value) => qty = value;
-  set setSubId(int value) => subId = value;
+  set setSubId(String value) => subId = value;
   set setImageUrl(String? value) => imageUrl = value;
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'description': desc,
       'sellingPrice': sellingPrice,
       'costPrice': costPrice,

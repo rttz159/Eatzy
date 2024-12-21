@@ -1,6 +1,6 @@
 class Voucher {
   late String? id;
-  late int subId;
+  late String subId;
   late String desc;
   late String startDate;
   late String endDate;
@@ -18,7 +18,7 @@ class Voucher {
   factory Voucher.fromJson(Map<String, dynamic> map) {
     return Voucher(
       id: map['id'] as String,
-      subId: map['subId'] as int,
+      subId: map['subId'] as String,
       desc: map['description'] as String,
       startDate: map['startDate'] as String,
       endDate: map['endDate'] as String,
@@ -28,7 +28,7 @@ class Voucher {
 
   String? get getId => id;
 
-  int get getSubId => subId;
+  String get getSubId => subId;
 
   String get getDesc => desc;
 
@@ -42,7 +42,7 @@ class Voucher {
     this.id = id;
   }
 
-  set setSubId(int subId) {
+  set setSubId(String subId) {
     this.subId = subId;
   }
 

@@ -25,7 +25,7 @@ class _SellerStructureState extends State<SellerStructure> {
             items: const [
               BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
               BottomNavigationBarItem(
-                  icon: Icon(Icons.menu_sharp), label: "Products"),
+                  icon: Icon(Icons.menu_sharp), label: "Subscriptions"),
               BottomNavigationBarItem(
                   icon: Icon(Icons.analytics_outlined), label: "Analytics"),
               BottomNavigationBarItem(

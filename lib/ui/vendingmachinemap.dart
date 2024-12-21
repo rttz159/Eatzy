@@ -1,6 +1,9 @@
+import 'package:assignment/datamodel/sellers.dart';
 import 'package:assignment/datamodel/vendingmachine.dart';
 import 'package:assignment/services/clouddatabase.dart';
 import 'package:assignment/services/connnectivity.dart';
+import 'package:assignment/services/userprovider.dart';
+import 'package:assignment/ui/seller/sellersubscribepage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -8,6 +11,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'dart:async';
+
+import 'package:provider/provider.dart';
 
 class VendingMachineMap extends StatefulWidget {
   const VendingMachineMap({super.key});
@@ -476,18 +481,53 @@ class _VendingMachineMapState extends State<VendingMachineMap> {
                                                 flex: 1,
                                                 child: ElevatedButton(
                                                   onPressed: () {
-                                                    final point = LatLng(
-                                                      double.parse(
-                                                          _filteredVendingMachine[
-                                                                  idx]
-                                                              .getLat),
-                                                      double.parse(
-                                                          _filteredVendingMachine[
-                                                                  idx]
-                                                              .getLong),
-                                                    );
-                                                    _mapController.move(
-                                                        point, 16.0);
+                                                    final provider = Provider
+                                                        .of<UserProvider>(
+                                                            context,
+                                                            listen: false);
+                                                    if (provider.getCurrentUser!
+                                                        is Sellers) {
+                                                      Navigator.push(
+                                                        context,
+                                                        PageRouteBuilder(
+                                                            pageBuilder: (context,
+                                                                    animation,
+                                                                    secondaryAnimation) =>
+                                                                SellersSubscribePage(
+                                                                  vendingMachine:
+                                                                      _filteredVendingMachine[
+                                                                          idx],
+                                                                ),
+                                                            transitionsBuilder:
+                                                                (context,
+                                                                    animation,
+                                                                    secondaryAnimation,
+                                                                    child) {
+                                                              const begin =
+                                                                  Offset(
+                                                                      1.0, 0.0);
+                                                              const end =
+                                                                  Offset.zero;
+                                                              const curve =
+                                                                  Curves.ease;
+
+                                                              var tween = Tween(
+                                                                      begin:
+                                                                          begin,
+                                                                      end: end)
+                                                                  .chain(CurveTween(
+                                                                      curve:
+                                                                          curve));
+
+                                                              return SlideTransition(
+                                                                position: animation
+                                                                    .drive(
+                                                                        tween),
+                                                                child: child,
+                                                              );
+                                                            }),
+                                                      );
+                                                    }
                                                   },
                                                   child: const Text("Select"),
                                                 ),

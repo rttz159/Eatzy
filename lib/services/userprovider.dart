@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserProvider extends ChangeNotifier {
-  AuthService _auth = AuthService();
+  final AuthService _auth = AuthService();
   Users? _currentUser;
   bool? _isSeller;
 

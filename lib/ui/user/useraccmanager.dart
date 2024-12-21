@@ -1,7 +1,9 @@
+import 'package:assignment/services/userpageprovider.dart';
 import 'package:assignment/services/userprovider.dart';
 import 'package:assignment/ui/feedback.dart';
 import 'package:assignment/ui/helpcentre.dart';
 import 'package:assignment/ui/setting.dart';
+import 'package:assignment/ui/user/zerohunger.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -105,7 +107,12 @@ class _UserAccManagerState extends State<UserAccManager> {
                         ),
                       ),
                       child: ListTile(
-                        onTap: () {},
+                        onTap: () {
+                          final provider = Provider.of<UserPageProvider>(
+                              context,
+                              listen: false);
+                          provider.changeTab(1);
+                        },
                         title: const Text(
                           "Orders",
                           style: TextStyle(
@@ -127,7 +134,27 @@ class _UserAccManagerState extends State<UserAccManager> {
                         ),
                       ),
                       child: ListTile(
-                        onTap: () {},
+                        onTap: () => Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                              pageBuilder:
+                                  (context, animation, secondaryAnimation) =>
+                                      const ZeroHungerPage(),
+                              transitionsBuilder: (context, animation,
+                                  secondaryAnimation, child) {
+                                const begin = Offset(1.0, 0.0);
+                                const end = Offset.zero;
+                                const curve = Curves.ease;
+
+                                var tween = Tween(begin: begin, end: end)
+                                    .chain(CurveTween(curve: curve));
+
+                                return SlideTransition(
+                                  position: animation.drive(tween),
+                                  child: child,
+                                );
+                              }),
+                        ),
                         title: const Text(
                           "Zero Hunger Mini Program",
                           style: TextStyle(

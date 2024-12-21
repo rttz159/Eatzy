@@ -145,6 +145,7 @@ class _SignupScreenState extends State<SignupScreen> {
         final userprovider = Provider.of<UserProvider>(context, listen: false);
         userprovider.setCurrentUser = _authService.getCurrentUser!;
         await userprovider.saveUserToLocalStorage();
+        userprovider.signOutUser();
         Navigator.pop(context);
       }
     } else {
@@ -249,6 +250,7 @@ class _SignupScreenState extends State<SignupScreen> {
         final userprovider = Provider.of<UserProvider>(context, listen: false);
         userprovider.setCurrentUser = _authService.getCurrentUser!;
         await userprovider.saveUserToLocalStorage();
+        userprovider.signOutUser();
         Navigator.pop(context);
       }
     } else {

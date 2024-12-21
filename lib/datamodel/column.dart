@@ -1,16 +1,16 @@
-class Column {
+class VendingMachineColumn {
   late String? id;
   late String vmId;
   late bool isAvailable;
 
-  Column({
+  VendingMachineColumn({
     required this.id,
     required this.vmId,
     required this.isAvailable,
   });
 
-  factory Column.fromJson(Map<String, dynamic> map) {
-    return Column(
+  factory VendingMachineColumn.fromJson(Map<String, dynamic> map) {
+    return VendingMachineColumn(
       id: map['id'] as String,
       vmId: map['vmId'] as String,
       isAvailable: map['isAvailable'] == 1,
@@ -37,6 +37,7 @@ class Column {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'vmId': vmId,
       'isAvailable': isAvailable ? 1 : 0,
     };

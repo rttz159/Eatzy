@@ -2,8 +2,8 @@ import 'package:assignment/services/sellerpageprovider.dart';
 import 'package:assignment/services/userpageprovider.dart';
 import 'package:assignment/services/userprovider.dart';
 import 'package:assignment/ui/login.dart';
-import 'package:assignment/ui/sellerstructure.dart';
-import 'package:assignment/ui/userstructure.dart';
+import 'package:assignment/ui/seller/sellerstructure.dart';
+import 'package:assignment/ui/user/userstructure.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
