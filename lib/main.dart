@@ -1,5 +1,7 @@
 import 'package:assignment/services/appcyclehandler.dart';
+import 'package:assignment/services/connectivityprovider.dart';
 import 'package:assignment/services/userprovider.dart';
+import 'package:assignment/services/vendingmachineprovider.dart';
 import 'package:assignment/ui/dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -14,12 +16,16 @@ void main() async {
   );
   final lifecycleHandler = AppLifecycleHandler();
   WidgetsBinding.instance.addObserver(lifecycleHandler);
-  runApp(
-    ChangeNotifierProvider(
-      create: (_) => UserProvider()..loadUserFromLocalStorage(),
-      child: const MyApp(),
-    ),
-  );
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (_) => UserProvider()),
+      ChangeNotifierProvider(create: (_) => VendingMachineProvider()),
+      ChangeNotifierProvider(
+        create: (_) => ConnectivityProvider(),
+      ),
+    ],
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {

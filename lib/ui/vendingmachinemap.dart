@@ -3,6 +3,7 @@ import 'package:assignment/datamodel/vendingmachine.dart';
 import 'package:assignment/services/clouddatabase.dart';
 import 'package:assignment/services/connnectivity.dart';
 import 'package:assignment/services/userprovider.dart';
+import 'package:assignment/services/vendingmachineprovider.dart';
 import 'package:assignment/ui/seller/sellersubscribepage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -266,23 +267,17 @@ class _VendingMachineMapState extends State<VendingMachineMap> {
   }
 
   Future<void> getVendingMachines() async {
-    bool internetConnection =
-        await _connectivityChecker.checkConnectivityOnce();
-    if (internetConnection) {
-      final tempVendingMachines = await db.read(CloudDatabase.vendingMachine);
-      final processedVendingMachine = tempVendingMachines.map((map) {
-        return VendingMachine.fromJson(map);
-      }).toList();
-      for (var x in processedVendingMachine) {
-        _addVendingMachineMarker(x);
-      }
-      setState(() {
-        _vendingMachine = processedVendingMachine;
-        _filteredVendingMachine = _vendingMachine;
-      });
-      _sortVendingMachinesByDistance();
-      Fluttertoast.showToast(msg: "Vending Machines' data fetched.");
+    final provider =
+        Provider.of<VendingMachineProvider>(context, listen: false);
+    for (var x in provider.vendingMachines) {
+      _addVendingMachineMarker(x);
     }
+    setState(() {
+      _vendingMachine = provider.vendingMachines;
+      _filteredVendingMachine = _vendingMachine;
+    });
+    _sortVendingMachinesByDistance();
+    Fluttertoast.showToast(msg: "Vending Machines' data fetched.");
   }
 
   @override

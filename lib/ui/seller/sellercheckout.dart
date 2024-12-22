@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class PaymentPage extends StatefulWidget {
   final List<Map<String, dynamic>> items;
@@ -43,8 +44,9 @@ class _PaymentPageState extends State<PaymentPage> {
         centerTitle: true,
       ),
       body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(),
+          ? Center(
+              child: LoadingAnimationWidget.staggeredDotsWave(
+                  color: Theme.of(context).primaryColor, size: 20),
             )
           : Padding(
               padding: const EdgeInsets.all(16.0),
@@ -62,7 +64,7 @@ class _PaymentPageState extends State<PaymentPage> {
                       itemBuilder: (context, index) {
                         final item = widget.items[index];
                         return ListTile(
-                          title: Text(item['name']),
+                          title: Text(item['name'] + " subscription"),
                           subtitle: Text('Price: RM ${item['price']}'),
                           trailing: Text('Qty: ${item['qty']}'),
                         );

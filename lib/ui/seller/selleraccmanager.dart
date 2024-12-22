@@ -1,3 +1,4 @@
+import 'package:assignment/services/connnectivity.dart';
 import 'package:assignment/services/userprovider.dart';
 import 'package:assignment/ui/feedback.dart';
 import 'package:assignment/ui/helpcentre.dart';
@@ -32,6 +33,7 @@ class _SellerAccManagerState extends State<SellerAccManager> {
               child: Consumer<UserProvider>(
                 builder:
                     (BuildContext context, UserProvider value, Widget? child) {
+                  MyConnectivityChecker _checker = MyConnectivityChecker();
                   return Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [

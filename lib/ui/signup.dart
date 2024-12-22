@@ -93,7 +93,7 @@ class _SignupScreenState extends State<SignupScreen> {
       });
     }
 
-    if (!icPattern.hasMatch(ic) || ic.isEmpty) {
+    if (!icPattern.hasMatch(ic) || ic.isEmpty || ic.length > 12) {
       setState(() {
         icErrorText = "Invalid IC";
       });
@@ -199,7 +199,7 @@ class _SignupScreenState extends State<SignupScreen> {
       });
     }
 
-    if (!icPattern.hasMatch(ic) || ic.isEmpty) {
+    if (!icPattern.hasMatch(ic) || ic.isEmpty || ic.length > 12) {
       setState(() {
         icErrorText = "Invalid IC";
       });

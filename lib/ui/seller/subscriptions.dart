@@ -1,5 +1,8 @@
 import 'package:assignment/datamodel/sellers.dart';
+import 'package:assignment/datamodel/subscription.dart';
+import 'package:assignment/datamodel/vendingmachine.dart';
 import 'package:assignment/services/userprovider.dart';
+import 'package:assignment/services/vendingmachineprovider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -63,11 +66,86 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                 if ((value.getCurrentUser as Sellers)
                     .getSubscriptions
                     .isEmpty) {
-                  return const Center(
-                      child: Text("There are no subscriptions"));
+                  return const Center(child: Text("There are no results"));
                 }
 
-                return const Text("Testing");
+                List<Subscription> tempSubscription =
+                    (value.getCurrentUser as Sellers).getSubscriptions;
+                List<Subscription> activeSubscription =
+                    tempSubscription.where((n) {
+                  return DateTime.parse(n.endDate).isAfter(DateTime.now());
+                }).toList();
+                List<Subscription> pastSubscription =
+                    tempSubscription.where((n) {
+                  return DateTime.parse(n.endDate)
+                      .isBefore(DateTime.now().add(const Duration(days: 1)));
+                }).toList();
+
+                late List<Subscription> usedSubscription;
+
+                switch (selectedButtonIndex) {
+                  case 0:
+                    usedSubscription = tempSubscription;
+                    break;
+                  case 1:
+                    usedSubscription = activeSubscription;
+                    break;
+                  case 2:
+                    usedSubscription = pastSubscription;
+                    break;
+                  default:
+                    break;
+                }
+                final vendingMachines =
+                    Provider.of<VendingMachineProvider>(context, listen: false)
+                        .vendingMachines;
+                return Expanded(
+                  child: usedSubscription.isEmpty
+                      ? const Center(child: Text("There are no results"))
+                      : ListView(
+                          children: usedSubscription.map((subscription) {
+                            String vendingMachineName = "";
+                            for (var y in vendingMachines) {
+                              if (subscription.getColumn.getVmId == y.getId!) {
+                                vendingMachineName = y.getDesc;
+                              }
+                            }
+                            return ListTile(
+                              leading: const CircleAvatar(
+                                child: Icon(Icons.view_column_outlined),
+                              ),
+                              title: Text(
+                                vendingMachineName,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              subtitle: Text(
+                                subscription.getColumn.getId!,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                ),
+                              ),
+                              trailing: const Icon(
+                                Icons.arrow_forward_ios,
+                              ),
+                              tileColor: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Theme.of(context)
+                                      .colorScheme
+                                      .secondaryContainer
+                                  : Colors.grey.shade100,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12.0),
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0, vertical: 8.0),
+                              onTap: () {},
+                            );
+                          }).toList(),
+                        ),
+                );
               },
             ),
           ],

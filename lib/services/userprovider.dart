@@ -30,6 +30,10 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
+  UserProvider() {
+    loadUserFromLocalStorage();
+  }
+
   void signOutUser() async {
     final prefs = await SharedPreferences.getInstance();
     _currentUser = null;
@@ -62,12 +66,14 @@ class UserProvider extends ChangeNotifier {
     if (_currentUser != null) {
       if (isSeller != null) {
         if (isSeller == true) {
-          prefs.setString(
-              'currentUser', jsonEncode((_currentUser as Sellers).toJson()));
+          Map<String, dynamic> userMap = (_currentUser as Sellers).toJson();
+          userMap['id'] = _currentUser!.getId;
+          prefs.setString('currentUser', jsonEncode(userMap));
           prefs.setBool("isSeller", true);
         } else {
-          prefs.setString(
-              'currentUser', jsonEncode((_currentUser as NormalUser).toJson()));
+          Map<String, dynamic> userMap = (_currentUser as NormalUser).toJson();
+          userMap['id'] = _currentUser!.getId;
+          prefs.setString('currentUser', jsonEncode(userMap));
           prefs.setBool("isSeller", false);
         }
       }

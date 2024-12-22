@@ -122,54 +122,86 @@ class _ProfileScreenState extends State<ProfileScreen> {
       isLoading = true;
     });
 
-    try {
-      currentUser.setName = _nameController.text.trim();
-      currentUser.setIc = _icController.text.trim();
-      if (selectedDate != null) {
-        currentUser.setBirthDate = selectedDate!.toIso8601String();
-      }
-      if (_selectedImageUrl != null) {
-        currentUser.setImageUrl = _selectedImageUrl;
-      }
+    final icPattern = RegExp(r'\d{12}');
+    String name = _nameController.text.trim();
+    String ic = _icController.text.trim();
 
-      if (currentUser is NormalUser) {
-        await db.save(
-            CloudDatabase.normalUsers, (currentUser as NormalUser).toJson(),
-            docId: currentUser.getId);
-      } else {
-        await db.save(CloudDatabase.seller, (currentUser as Sellers).toJson(),
-            docId: currentUser.getId);
-      }
-
-      Fluttertoast.showToast(msg: "Profile updated successfully.");
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text("Profile Update"),
-            content: const Text(
-                "Your profile has been updated successfully. You will need to Sign In again."),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    isEditing = false;
-                  });
-                  provider.signOutUser();
-                },
-                child: const Text("OK"),
-              ),
-            ],
-          );
-        },
-      );
-    } catch (e) {
-      Fluttertoast.showToast(msg: "Failed to update profile: $e");
-    } finally {
+    if (!icPattern.hasMatch(ic) || ic.isEmpty || ic.length > 12) {
       setState(() {
-        isLoading = false;
+        icErrorText = "Invalid IC";
+      });
+      Fluttertoast.showToast(msg: "Invalid IC (12 digits without separator)");
+    } else {
+      setState(() {
+        icErrorText = null;
       });
     }
+
+    if (!name.isNotEmpty) {
+      setState(() {
+        nameErrorText = "Invalid Name";
+      });
+      Fluttertoast.showToast(msg: "Invalid Name");
+    } else {
+      setState(() {
+        nameErrorText = null;
+      });
+    }
+
+    if (nameErrorText == null && icErrorText == null) {
+      try {
+        currentUser.setName = name;
+        currentUser.setIc = ic;
+        if (selectedDate != null) {
+          currentUser.setBirthDate = selectedDate!.toIso8601String();
+        }
+        if (_selectedImageUrl != null) {
+          currentUser.setImageUrl = _selectedImageUrl;
+        }
+
+        if (currentUser is NormalUser) {
+          await db.save(
+              CloudDatabase.normalUsers, (currentUser as NormalUser).toJson(),
+              docId: currentUser.getId);
+        } else {
+          print("current user's id = ${currentUser.getId}");
+          await db.save(CloudDatabase.seller, (currentUser as Sellers).toJson(),
+              docId: currentUser.getId);
+        }
+
+        Fluttertoast.showToast(msg: "Profile updated successfully.");
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text("Profile Update"),
+              content: const Text(
+                  "Your profile has been updated successfully. You will need to Sign In again."),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      isEditing = false;
+                    });
+                    provider.signOutUser();
+                  },
+                  child: const Text("OK"),
+                ),
+              ],
+            );
+          },
+        );
+      } catch (e) {
+        Fluttertoast.showToast(msg: "Failed to update profile: $e");
+      } finally {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override

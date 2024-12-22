@@ -77,38 +77,54 @@ class _SellersSubscribePageState extends State<SellersSubscribePage> {
 
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => PaymentPage(
-          items: [selectedColumn],
-          onPaymentSelected: (paymentMethod) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                  content: Text('Payment Method: $paymentMethod success!')),
-            );
-            final provider = Provider.of<UserProvider>(context, listen: false);
-            Sellers currentSeller = provider.getCurrentUser! as Sellers;
-            final today = DateTime.now();
-            CloudDatabase db = CloudDatabase();
+      PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => PaymentPage(
+                items: [selectedColumn],
+                onPaymentSelected: (paymentMethod) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content:
+                            Text('Payment Method: $paymentMethod success!')),
+                  );
+                  final provider =
+                      Provider.of<UserProvider>(context, listen: false);
+                  Sellers currentSeller = provider.getCurrentUser! as Sellers;
+                  final today = DateTime.now();
+                  CloudDatabase db = CloudDatabase();
 
-            columns[indexSelected!].setIsAvailable = false;
-            currentSeller.getSubscriptions.add(Subscription(
-                id: currentSeller.getSubscriptions.length.toString(),
-                startDate: today.toIso8601String(),
-                endDate:
-                    today.add(Duration(days: (months * 30))).toIso8601String(),
-                column: columns[indexSelected!],
-                products: List.empty()));
-            db.save(CloudDatabase.seller, currentSeller.toJson(),
-                docId: currentSeller.getId);
-            db.save(CloudDatabase.vendingMachine, _vendingMachine.toJson(),
-                docId: _vendingMachine.getId);
-            provider.saveUserToLocalStorage();
-            Navigator.of(context).pop();
-            Navigator.of(context).pop();
-            Navigator.of(context).pop();
-          },
-        ),
-      ),
+                  columns[indexSelected!].setIsAvailable = false;
+                  currentSeller.getSubscriptions.add(Subscription(
+                      id: currentSeller.getSubscriptions.length.toString(),
+                      startDate: today.toIso8601String(),
+                      endDate: today
+                          .add(Duration(days: (months * 30)))
+                          .toIso8601String(),
+                      column: columns[indexSelected!],
+                      products: List.empty()));
+                  db.save(CloudDatabase.seller, currentSeller.toJson(),
+                      docId: currentSeller.getId);
+                  db.save(
+                      CloudDatabase.vendingMachine, _vendingMachine.toJson(),
+                      docId: _vendingMachine.getId);
+                  provider.saveUserToLocalStorage();
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                },
+              ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const begin = Offset(1.0, 0.0);
+            const end = Offset.zero;
+            const curve = Curves.ease;
+
+            var tween =
+                Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+            return SlideTransition(
+              position: animation.drive(tween),
+              child: child,
+            );
+          }),
     );
   }
 
@@ -306,7 +322,7 @@ class _SellersSubscribePageState extends State<SellersSubscribePage> {
                             height: 20,
                           ),
                           indexSelected == null
-                              ? const Text("Column chose: None")
+                              ? const Text("Column chose: [None]")
                               : Text(
                                   "Column chose: ${columns[indexSelected!].getId}"),
                           const SizedBox(
