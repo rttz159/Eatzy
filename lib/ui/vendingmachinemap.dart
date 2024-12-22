@@ -269,6 +269,7 @@ class _VendingMachineMapState extends State<VendingMachineMap> {
   Future<void> getVendingMachines() async {
     final provider =
         Provider.of<VendingMachineProvider>(context, listen: false);
+    await provider.getVendingMachines();
     for (var x in provider.vendingMachines) {
       _addVendingMachineMarker(x);
     }
@@ -443,12 +444,37 @@ class _VendingMachineMapState extends State<VendingMachineMap> {
                                                 flex: 1,
                                                 child: Center(
                                                   child: Image.network(
-                                                      _filteredVendingMachine[
-                                                              idx]
-                                                          .getImageUrl!,
-                                                      height: 80,
-                                                      width: 100,
-                                                      fit: BoxFit.contain),
+                                                    _filteredVendingMachine[idx]
+                                                        .getImageUrl!,
+                                                    height: 80,
+                                                    width: 100,
+                                                    fit: BoxFit.contain,
+                                                    loadingBuilder: (BuildContext
+                                                            context,
+                                                        Widget child,
+                                                        ImageChunkEvent?
+                                                            loadingProgress) {
+                                                      if (loadingProgress ==
+                                                          null) {
+                                                        return child;
+                                                      } else {
+                                                        return Center(
+                                                          child:
+                                                              CircularProgressIndicator(
+                                                            value: loadingProgress
+                                                                        .expectedTotalBytes !=
+                                                                    null
+                                                                ? loadingProgress
+                                                                        .cumulativeBytesLoaded /
+                                                                    (loadingProgress
+                                                                            .expectedTotalBytes ??
+                                                                        1)
+                                                                : null,
+                                                          ),
+                                                        );
+                                                      }
+                                                    },
+                                                  ),
                                                 ),
                                               ),
                                               const SizedBox(height: 10),
@@ -480,47 +506,47 @@ class _VendingMachineMapState extends State<VendingMachineMap> {
                                                         .of<UserProvider>(
                                                             context,
                                                             listen: false);
-                                                    if (provider.getCurrentUser!
+                                                    if (provider.getCurrentUser
                                                         is Sellers) {
                                                       Navigator.push(
                                                         context,
                                                         PageRouteBuilder(
-                                                            pageBuilder: (context,
-                                                                    animation,
-                                                                    secondaryAnimation) =>
-                                                                SellersSubscribePage(
-                                                                  vendingMachine:
-                                                                      _filteredVendingMachine[
-                                                                          idx],
-                                                                ),
-                                                            transitionsBuilder:
-                                                                (context,
-                                                                    animation,
-                                                                    secondaryAnimation,
-                                                                    child) {
-                                                              const begin =
-                                                                  Offset(
-                                                                      1.0, 0.0);
-                                                              const end =
-                                                                  Offset.zero;
-                                                              const curve =
-                                                                  Curves.ease;
+                                                          pageBuilder: (context,
+                                                                  animation,
+                                                                  secondaryAnimation) =>
+                                                              SellersSubscribePage(
+                                                            vendingMachine:
+                                                                _filteredVendingMachine[
+                                                                    idx],
+                                                          ),
+                                                          transitionsBuilder:
+                                                              (context,
+                                                                  animation,
+                                                                  secondaryAnimation,
+                                                                  child) {
+                                                            const begin =
+                                                                Offset(
+                                                                    1.0, 0.0);
+                                                            const end =
+                                                                Offset.zero;
+                                                            const curve =
+                                                                Curves.ease;
 
-                                                              var tween = Tween(
-                                                                      begin:
-                                                                          begin,
-                                                                      end: end)
-                                                                  .chain(CurveTween(
-                                                                      curve:
-                                                                          curve));
+                                                            var tween = Tween(
+                                                                    begin:
+                                                                        begin,
+                                                                    end: end)
+                                                                .chain(CurveTween(
+                                                                    curve:
+                                                                        curve));
 
-                                                              return SlideTransition(
-                                                                position: animation
-                                                                    .drive(
-                                                                        tween),
-                                                                child: child,
-                                                              );
-                                                            }),
+                                                            return SlideTransition(
+                                                              position: animation
+                                                                  .drive(tween),
+                                                              child: child,
+                                                            );
+                                                          },
+                                                        ),
                                                       );
                                                     }
                                                   },

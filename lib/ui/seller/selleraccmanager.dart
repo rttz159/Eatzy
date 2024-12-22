@@ -1,4 +1,4 @@
-import 'package:assignment/services/connnectivity.dart';
+import 'package:assignment/services/sellerpageprovider.dart';
 import 'package:assignment/services/userprovider.dart';
 import 'package:assignment/ui/feedback.dart';
 import 'package:assignment/ui/helpcentre.dart';
@@ -33,7 +33,6 @@ class _SellerAccManagerState extends State<SellerAccManager> {
               child: Consumer<UserProvider>(
                 builder:
                     (BuildContext context, UserProvider value, Widget? child) {
-                  MyConnectivityChecker _checker = MyConnectivityChecker();
                   return Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -54,7 +53,29 @@ class _SellerAccManagerState extends State<SellerAccManager> {
                                   fit: BoxFit.cover,
                                 )
                               : Image.network(
-                                  value.getCurrentUser!.getImageUrl!),
+                                  value.getCurrentUser!.getImageUrl!,
+                                  loadingBuilder: (BuildContext context,
+                                      Widget child,
+                                      ImageChunkEvent? loadingProgress) {
+                                    if (loadingProgress == null) {
+                                      return child;
+                                    } else {
+                                      return Center(
+                                        child: CircularProgressIndicator(
+                                          value: loadingProgress
+                                                      .expectedTotalBytes !=
+                                                  null
+                                              ? loadingProgress
+                                                      .cumulativeBytesLoaded /
+                                                  (loadingProgress
+                                                          .expectedTotalBytes ??
+                                                      1)
+                                              : null,
+                                        ),
+                                      );
+                                    }
+                                  },
+                                ),
                         ),
                       ),
                       const SizedBox(
@@ -107,7 +128,12 @@ class _SellerAccManagerState extends State<SellerAccManager> {
                         ),
                       ),
                       child: ListTile(
-                        onTap: () {},
+                        onTap: () {
+                          final provider = Provider.of<SellerPageProvider>(
+                              context,
+                              listen: false);
+                          provider.changeTab(1);
+                        },
                         title: const Text(
                           "Your Subscriptions",
                           style: TextStyle(

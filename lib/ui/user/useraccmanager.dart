@@ -54,7 +54,30 @@ class _UserAccManagerState extends State<UserAccManager> {
                                   fit: BoxFit.cover,
                                 )
                               : Image.network(
-                                  value.getCurrentUser!.getImageUrl!),
+                                  value.getCurrentUser!.getImageUrl!,
+                                  loadingBuilder: (BuildContext context,
+                                      Widget child,
+                                      ImageChunkEvent? loadingProgress) {
+                                    if (loadingProgress == null) {
+                                      return child; // image is loaded
+                                    } else {
+                                      // While loading the image, show a progress indicator
+                                      return Center(
+                                        child: CircularProgressIndicator(
+                                          value: loadingProgress
+                                                      .expectedTotalBytes !=
+                                                  null
+                                              ? loadingProgress
+                                                      .cumulativeBytesLoaded /
+                                                  (loadingProgress
+                                                          .expectedTotalBytes ??
+                                                      1)
+                                              : null,
+                                        ),
+                                      );
+                                    }
+                                  },
+                                ),
                         ),
                       ),
                       const SizedBox(

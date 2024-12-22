@@ -291,17 +291,87 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           "assets/logo/logo.png",
                                           fit: BoxFit.cover,
                                         )
-                                      : Image.network(userProvider
-                                          .getCurrentUser!.getImageUrl!))
-                                  : Image.network(_selectedImageUrl!))
+                                      : Image.network(
+                                          userProvider
+                                              .getCurrentUser!.getImageUrl!,
+                                          loadingBuilder: (BuildContext context,
+                                              Widget child,
+                                              ImageChunkEvent?
+                                                  loadingProgress) {
+                                            if (loadingProgress == null) {
+                                              return child;
+                                            } else {
+                                              return Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  value: loadingProgress
+                                                              .expectedTotalBytes !=
+                                                          null
+                                                      ? loadingProgress
+                                                              .cumulativeBytesLoaded /
+                                                          (loadingProgress
+                                                                  .expectedTotalBytes ??
+                                                              1)
+                                                      : null,
+                                                ),
+                                              );
+                                            }
+                                          },
+                                        ))
+                                  : Image.network(
+                                      _selectedImageUrl!,
+                                      loadingBuilder: (BuildContext context,
+                                          Widget child,
+                                          ImageChunkEvent? loadingProgress) {
+                                        if (loadingProgress == null) {
+                                          return child;
+                                        } else {
+                                          return Center(
+                                            child: CircularProgressIndicator(
+                                              value: loadingProgress
+                                                          .expectedTotalBytes !=
+                                                      null
+                                                  ? loadingProgress
+                                                          .cumulativeBytesLoaded /
+                                                      (loadingProgress
+                                                              .expectedTotalBytes ??
+                                                          1)
+                                                  : null,
+                                            ),
+                                          );
+                                        }
+                                      },
+                                    ))
                               : (userProvider.getCurrentUser!.getImageUrl ==
                                       null
                                   ? Image.asset(
                                       "assets/logo/logo.png",
                                       fit: BoxFit.cover,
                                     )
-                                  : Image.network(userProvider
-                                      .getCurrentUser!.getImageUrl!)),
+                                  : Image.network(
+                                      userProvider.getCurrentUser!.getImageUrl!,
+                                      loadingBuilder: (BuildContext context,
+                                          Widget child,
+                                          ImageChunkEvent? loadingProgress) {
+                                        if (loadingProgress == null) {
+                                          return child;
+                                        } else {
+                                          return Center(
+                                            child: CircularProgressIndicator(
+                                              value: loadingProgress
+                                                          .expectedTotalBytes !=
+                                                      null
+                                                  ? loadingProgress
+                                                          .cumulativeBytesLoaded /
+                                                      (loadingProgress
+                                                              .expectedTotalBytes ??
+                                                          1)
+                                                  : null,
+                                            ),
+                                          );
+                                        }
+                                      },
+                                    )),
                         ),
                       ),
                       IconButton(

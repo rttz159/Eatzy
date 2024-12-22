@@ -17,10 +17,14 @@ class VendingMachineProvider extends ChangeNotifier {
   Future<void> getVendingMachines() async {
     bool internetConnection =
         await _connectivityChecker.checkConnectivityOnce();
+    if (!internetConnection) {
+      return;
+    }
     if (internetConnection) {
       final tempVendingMachines = await db.read(CloudDatabase.vendingMachine);
       final processedVendingMachine = tempVendingMachines.map((map) {
-        return VendingMachine.fromJson(map);
+        final vm = VendingMachine.fromJson(map);
+        return vm;
       }).toList();
       _vendingMachine = processedVendingMachine;
       notifyListeners();

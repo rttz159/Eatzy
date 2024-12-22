@@ -19,10 +19,10 @@ void main() async {
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (_) => UserProvider()),
-      ChangeNotifierProvider(create: (_) => VendingMachineProvider()),
       ChangeNotifierProvider(
         create: (_) => ConnectivityProvider(),
       ),
+      ChangeNotifierProvider(create: (_) => VendingMachineProvider()),
     ],
     child: const MyApp(),
   ));
