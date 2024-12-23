@@ -1,7 +1,6 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'dart:io';
 import 'dart:async';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 ///Singleton class to implement the network checker.
 class MyConnectivityChecker {
@@ -46,12 +45,6 @@ class MyConnectivityChecker {
   void subscribeToConnectivityTypeChanged(
       void Function(List<ConnectivityResult>) x) {
     _connSub = _connectivity.onConnectivityChanged.listen(x);
-  }
-
-  ///Passing a function that accept a InternetConnectionStatus as a parameter to enable the subscription to the internet connectivity listener. Calling this function twice will overwrite the previous function.
-  void subscribeToInternetConnectivity(
-      void Function(InternetConnectionStatus) x) {
-    _internetSub = InternetConnectionChecker().onStatusChange.listen(x);
   }
 
   ///use this in dispose function

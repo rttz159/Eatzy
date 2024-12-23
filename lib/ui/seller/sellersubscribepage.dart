@@ -100,7 +100,8 @@ class _SellersSubscribePageState extends State<SellersSubscribePage> {
                           .add(Duration(days: (months * 30)))
                           .toIso8601String(),
                       column: columns[indexSelected!],
-                      products: List.empty()));
+                      products: List.empty(),
+                      vouchers: List.empty()));
                   db.save(CloudDatabase.seller, currentSeller.toJson(),
                       docId: currentSeller.getId);
                   db.save(

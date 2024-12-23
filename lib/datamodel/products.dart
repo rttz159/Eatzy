@@ -5,6 +5,7 @@ class Products {
   late double costPrice;
   late int qty;
   late String subId;
+  late String bestBefore;
   late String? imageUrl;
 
   Products({
@@ -14,6 +15,7 @@ class Products {
     required this.costPrice,
     required this.qty,
     required this.subId,
+    required this.bestBefore,
     this.imageUrl,
   });
 
@@ -25,6 +27,7 @@ class Products {
       costPrice: map['costPrice'] as double,
       qty: map['qty'] as int,
       subId: map['subId'] as String,
+      bestBefore: map['bestBefore'] as String,
       imageUrl: map['imageUrl'] as String?,
     );
   }
@@ -35,6 +38,7 @@ class Products {
   double get getCostPrice => costPrice;
   int get getQty => qty;
   String get getSubId => subId;
+  String get getBestBefore => bestBefore;
   String? get getImageUrl => imageUrl;
 
   set setId(String value) => id = value;
@@ -43,6 +47,7 @@ class Products {
   set setCostPrice(double value) => costPrice = value;
   set setQty(int value) => qty = value;
   set setSubId(String value) => subId = value;
+  set setBestBefore(String value) => bestBefore = value;
   set setImageUrl(String? value) => imageUrl = value;
 
   Map<String, dynamic> toJson() {
@@ -54,6 +59,7 @@ class Products {
       'qty': qty,
       'subId': subId,
       'imageUrl': imageUrl,
+      'bestBefore': bestBefore,
     };
   }
 }

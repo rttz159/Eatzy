@@ -125,6 +125,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final icPattern = RegExp(r'\d{12}');
     String name = _nameController.text.trim();
     String ic = _icController.text.trim();
+    String date = _birthDateController.text.trim();
 
     if (!icPattern.hasMatch(ic) || ic.isEmpty || ic.length > 12) {
       setState(() {
@@ -148,7 +149,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
       });
     }
 
-    if (nameErrorText == null && icErrorText == null) {
+    if (date.isEmpty) {
+      setState(() {
+        birthDateErrorText = "Invalid Date";
+      });
+      Fluttertoast.showToast(msg: "Invalid Date");
+    } else {
+      setState(() {
+        birthDateErrorText = null;
+      });
+    }
+
+    if (nameErrorText == null &&
+        icErrorText == null &&
+        birthDateErrorText == null) {
       try {
         currentUser.setName = name;
         currentUser.setIc = ic;
@@ -273,8 +287,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       const SizedBox(height: 20),
                       Container(
-                        width: 100,
-                        height: 100,
+                        width: 150,
+                        height: 150,
                         clipBehavior: Clip.hardEdge,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),

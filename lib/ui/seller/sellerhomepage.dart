@@ -1,4 +1,3 @@
-import 'package:assignment/services/userpageprovider.dart';
 import 'package:assignment/services/userprovider.dart';
 import 'package:assignment/ui/vendingmachinemap.dart';
 import 'package:flutter/material.dart';
@@ -106,10 +105,7 @@ class _SellerHomePageState extends State<SellerHomePage> {
                     Icons.discount_outlined,
                     color: Colors.black,
                   ),
-                  onPressed: () {
-                    Provider.of<UserPageProvider>(context, listen: false)
-                        .changeTab(1);
-                  },
+                  onPressed: () {},
                   style: ElevatedButton.styleFrom(
                     elevation: 4,
                     backgroundColor:

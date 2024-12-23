@@ -57,6 +57,7 @@ class _SignupScreenState extends State<SignupScreen> {
     String password = _passwordController.text.trim();
     String name = _nameController.text.trim();
     String ic = _icController.text.trim();
+    String date = _birthDateController.text.trim();
 
     final emailPattern = RegExp(r'[\w-\.]+@([\w-]+\.)+[\w-]{2,4}');
     final passwordPattern =
@@ -112,6 +113,17 @@ class _SignupScreenState extends State<SignupScreen> {
     } else {
       setState(() {
         nameErrorText = null;
+      });
+    }
+
+    if (date.isEmpty) {
+      setState(() {
+        birthDateErrorText = "Invalid Date";
+      });
+      Fluttertoast.showToast(msg: "Invalid Date");
+    } else {
+      setState(() {
+        birthDateErrorText = null;
       });
     }
 
@@ -163,6 +175,7 @@ class _SignupScreenState extends State<SignupScreen> {
     String password = _passwordController.text.trim();
     String name = _nameController.text.trim();
     String ic = _icController.text.trim();
+    String date = _birthDateController.text.trim();
 
     final emailPattern = RegExp(r'[\w-\.]+@([\w-]+\.)+[\w-]{2,4}');
     final passwordPattern =
@@ -218,6 +231,17 @@ class _SignupScreenState extends State<SignupScreen> {
     } else {
       setState(() {
         nameErrorText = null;
+      });
+    }
+
+    if (date.isEmpty) {
+      setState(() {
+        birthDateErrorText = "Invalid Date";
+      });
+      Fluttertoast.showToast(msg: "Invalid Date");
+    } else {
+      setState(() {
+        birthDateErrorText = null;
       });
     }
 
