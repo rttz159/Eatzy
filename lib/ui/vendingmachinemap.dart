@@ -2,6 +2,7 @@ import 'package:assignment/datamodel/sellers.dart';
 import 'package:assignment/datamodel/vendingmachine.dart';
 import 'package:assignment/services/clouddatabase.dart';
 import 'package:assignment/services/connnectivity.dart';
+import 'package:assignment/services/usercartdataprovider.dart';
 import 'package:assignment/services/userprovider.dart';
 import 'package:assignment/services/vendingmachineprovider.dart';
 import 'package:assignment/ui/seller/sellersubscribepage.dart';
@@ -554,13 +555,10 @@ class _VendingMachineMapState extends State<VendingMachineMap> {
                                                         context,
                                                         PageRouteBuilder(
                                                           pageBuilder: (context,
-                                                                  animation,
-                                                                  secondaryAnimation) =>
-                                                              UserPurchasingPage(
-                                                            selectedVendingMachine:
-                                                                _filteredVendingMachine[
-                                                                    idx],
-                                                          ),
+                                                              animation,
+                                                              secondaryAnimation) {
+                                                            return const UserPurchasingPage();
+                                                          },
                                                           transitionsBuilder:
                                                               (context,
                                                                   animation,
@@ -590,6 +588,19 @@ class _VendingMachineMapState extends State<VendingMachineMap> {
                                                           },
                                                         ),
                                                       );
+
+                                                      WidgetsBinding.instance
+                                                          .addPostFrameCallback(
+                                                              (_) {
+                                                        final provider = Provider
+                                                            .of<UserCartDataProvider>(
+                                                                context,
+                                                                listen: false);
+                                                        provider.cart = {};
+                                                        provider.selectedVendingMachine =
+                                                            _filteredVendingMachine[
+                                                                idx];
+                                                      });
                                                     }
                                                   },
                                                   child: const Text("Select"),

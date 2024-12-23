@@ -57,6 +57,8 @@ dependencies:
   flutter_email_sender: any
   image_picker: any
   shimmer: any
+  uuid: any
+  geocoding: any
 
 dev_dependencies:
   flutter_test:

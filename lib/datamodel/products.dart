@@ -1,3 +1,5 @@
+import 'package:uuid/uuid.dart';
+
 class Products {
   late String? id;
   late String desc;
@@ -9,7 +11,7 @@ class Products {
   late String? imageUrl;
 
   Products({
-    required this.id,
+    this.id,
     required this.desc,
     required this.sellingPrice,
     required this.costPrice,
@@ -17,7 +19,9 @@ class Products {
     required this.subId,
     required this.bestBefore,
     this.imageUrl,
-  });
+  }) {
+    id ??= const Uuid().v1().toString();
+  }
 
   factory Products.fromJson(Map<String, dynamic> map) {
     return Products(

@@ -22,6 +22,7 @@ class _StockManagementPageState extends State<StockManagementPage> {
   late Subscription selectedSubscription;
   late VendingMachine selectedVendingMachine;
   late List<Products> products;
+  late int availableItemCount;
 
   @override
   void initState() {
@@ -29,11 +30,21 @@ class _StockManagementPageState extends State<StockManagementPage> {
     selectedSubscription = widget.selectedSubscription;
     selectedVendingMachine = widget.selectedVendingMachine;
     products = selectedSubscription.getProducts;
+    int totalcount = 0;
+    for (Products x in products) {
+      totalcount += x.getQty;
+    }
+    availableItemCount = 10 - totalcount;
   }
 
   void refreshProductList() {
+    int totalcount = 0;
+    for (Products x in products) {
+      totalcount += x.getQty;
+    }
     setState(() {
       products = selectedSubscription.getProducts;
+      availableItemCount = 10 - totalcount;
     });
   }
 
@@ -45,33 +56,39 @@ class _StockManagementPageState extends State<StockManagementPage> {
           title: const Text("Manage Your Stock"),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            bool? shouldRebuild = await Navigator.push(
-              context,
-              PageRouteBuilder(
-                pageBuilder: (context, animation, secondaryAnimation) =>
-                    ProductDetailsPage(subscription: selectedSubscription),
-                transitionsBuilder:
-                    (context, animation, secondaryAnimation, child) {
-                  const begin = Offset(1.0, 0.0);
-                  const end = Offset.zero;
-                  const curve = Curves.ease;
-                  var tween = Tween(begin: begin, end: end)
-                      .chain(CurveTween(curve: curve));
+          onPressed: availableItemCount <= 0
+              ? null
+              : () async {
+                  bool? shouldRebuild = await Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          ProductDetailsPage(
+                              subscription: selectedSubscription,
+                              availableItemCount: availableItemCount),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        const begin = Offset(1.0, 0.0);
+                        const end = Offset.zero;
+                        const curve = Curves.ease;
+                        var tween = Tween(begin: begin, end: end)
+                            .chain(CurveTween(curve: curve));
 
-                  return SlideTransition(
-                    position: animation.drive(tween),
-                    child: child,
+                        return SlideTransition(
+                          position: animation.drive(tween),
+                          child: child,
+                        );
+                      },
+                    ),
                   );
-                },
-              ),
-            );
 
-            if (shouldRebuild != null && shouldRebuild) {
-              refreshProductList();
-            }
-          },
-          child: const Icon(Icons.add),
+                  if (shouldRebuild != null && shouldRebuild) {
+                    refreshProductList();
+                  }
+                },
+          child: availableItemCount <= 0
+              ? const Icon(Icons.not_interested_rounded)
+              : const Icon(Icons.add),
         ),
         body: SingleChildScrollView(
           child: Padding(
@@ -172,6 +189,7 @@ class _StockManagementPageState extends State<StockManagementPage> {
                                           ProductDetailsPage(
                                         subscription: selectedSubscription,
                                         products: product,
+                                        availableItemCount: availableItemCount,
                                       ),
                                       transitionsBuilder: (context, animation,
                                           secondaryAnimation, child) {

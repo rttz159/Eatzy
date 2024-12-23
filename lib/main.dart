@@ -1,5 +1,6 @@
 import 'package:assignment/services/appcyclehandler.dart';
 import 'package:assignment/services/connectivityprovider.dart';
+import 'package:assignment/services/usercartdataprovider.dart';
 import 'package:assignment/services/userprovider.dart';
 import 'package:assignment/services/vendingmachineprovider.dart';
 import 'package:assignment/ui/dashboard.dart';
@@ -23,6 +24,7 @@ void main() async {
         create: (_) => ConnectivityProvider(),
       ),
       ChangeNotifierProvider(create: (_) => VendingMachineProvider()),
+      ChangeNotifierProvider(create: (_) => UserCartDataProvider()),
     ],
     child: const MyApp(),
   ));

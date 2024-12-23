@@ -59,9 +59,8 @@ class _UserAccManagerState extends State<UserAccManager> {
                                       Widget child,
                                       ImageChunkEvent? loadingProgress) {
                                     if (loadingProgress == null) {
-                                      return child; // image is loaded
+                                      return child;
                                     } else {
-                                      // While loading the image, show a progress indicator
                                       return Center(
                                         child: CircularProgressIndicator(
                                           value: loadingProgress

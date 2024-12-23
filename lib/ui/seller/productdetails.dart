@@ -15,7 +15,12 @@ import 'package:provider/provider.dart';
 class ProductDetailsPage extends StatefulWidget {
   Products? products;
   final Subscription subscription;
-  ProductDetailsPage({super.key, this.products, required this.subscription});
+  late int availableItemCount;
+  ProductDetailsPage(
+      {super.key,
+      this.products,
+      required this.subscription,
+      required this.availableItemCount});
 
   @override
   State<ProductDetailsPage> createState() => _ProductDetailsPageState();
@@ -25,6 +30,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   DateTime? selectedDate;
   late Products? products = widget.products;
   late Subscription subscription = widget.subscription;
+  late int availableItemCount = widget.availableItemCount;
   final _nameController = TextEditingController();
   final _costpriceController = TextEditingController();
   final _sellingpriceController = TextEditingController();
@@ -167,9 +173,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       });
     }
 
-    if (qty == null || qty <= 0) {
+    if (qty == null || qty <= 0 || qty > availableItemCount) {
       setState(() {
-        qtyErrorStr = "Invalid Qty";
+        qtyErrorStr = "Invalid Qty, $availableItemCount item space left.";
       });
     } else {
       setState(() {
@@ -196,7 +202,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       Sellers currentSeller = provider.getCurrentUser as Sellers;
 
       Products tempProd = Products(
-          id: subscription.getProducts.length.toString(),
+          id: null,
           desc: name,
           sellingPrice: sellingprice!,
           costPrice: costprice!,
@@ -213,6 +219,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       setState(() {
         isLoading = false;
       });
+      Fluttertoast.showToast(msg: "Product Created.");
       Navigator.of(context).pop(true);
     }
 
@@ -266,9 +273,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       });
     }
 
-    if (qty == null || qty <= 0) {
+    if (qty == null ||
+        qty <= 0 ||
+        qty > (availableItemCount + products!.getQty)) {
       setState(() {
-        qtyErrorStr = "Invalid Qty";
+        qtyErrorStr =
+            "Invalid Qty, ${(availableItemCount + products!.getQty)} item space left.";
       });
     } else {
       setState(() {
@@ -299,7 +309,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       products!.setSellingPrice = sellingprice!;
       products!.setCostPrice = costprice!;
       products!.setQty = qty!;
-      products!.setImageUrl = _selectedImageUrl;
+      products!.setImageUrl = _selectedImageUrl ?? products!.getImageUrl;
 
       CloudDatabase db = CloudDatabase();
       db.save(CloudDatabase.seller, currentSeller.toJson(),
@@ -310,6 +320,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       setState(() {
         isLoading = false;
       });
+
+      Fluttertoast.showToast(msg: "Product Updated.");
       Navigator.of(context).pop(true);
     }
 
@@ -352,6 +364,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
           docId: currentSeller.getId);
 
       provider.saveUserToLocalStorage();
+      Fluttertoast.showToast(msg: "Product Removed.");
       Navigator.of(context).pop(true);
     }
   }

@@ -1,53 +1,142 @@
 import 'package:assignment/datamodel/products.dart';
+import 'package:assignment/datamodel/purchasehistory.dart';
 import 'package:assignment/datamodel/sellers.dart';
-import 'package:assignment/datamodel/subscription.dart';
-import 'package:assignment/datamodel/vendingmachine.dart';
 import 'package:assignment/services/clouddatabase.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:assignment/services/userprovider.dart';
+import 'package:assignment/ui/user/usercart.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:intl/intl.dart' as intl;
+
+import '../../services/usercartdataprovider.dart';
 
 class UserPurchasingPage extends StatefulWidget {
-  final VendingMachine selectedVendingMachine;
-  const UserPurchasingPage({super.key, required this.selectedVendingMachine});
+  const UserPurchasingPage({super.key});
 
   @override
   State<UserPurchasingPage> createState() => _UserPurchasingPageState();
 }
 
 class _UserPurchasingPageState extends State<UserPurchasingPage> {
-  late VendingMachine selectedVendingMachine = widget.selectedVendingMachine;
-  CloudDatabase db = CloudDatabase();
-  late List<Sellers> sellerList;
-  List<Subscription> subscriptionList = [];
-  List<Products> prodList = [];
+  final numberFormat = intl.NumberFormat("RM #####0.0#");
+  List<Products> filteredProdList = [];
   final _searchController = TextEditingController();
   bool isLoading = false;
+  late int _itemCount = 0;
+
+  void _filterProducts(String query) {
+    final providerList =
+        Provider.of<UserCartDataProvider>(context, listen: false).prodList;
+    if (providerList.isEmpty) {
+      setState(() {
+        filteredProdList = [];
+      });
+      return;
+    }
+    if (query.isEmpty) {
+      setState(() {
+        filteredProdList = providerList;
+      });
+    } else {
+      setState(() {
+        filteredProdList = providerList
+            .where((products) =>
+                products.getDesc.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+      });
+    }
+  }
 
   void getSellerList() async {
     setState(() {
       isLoading = true;
     });
 
-    sellerList = (await db.read(CloudDatabase.seller)).map((seller) {
-      return Sellers.fromJson(seller);
-    }).toList();
-    for (Sellers seller in sellerList) {
-      subscriptionList.addAll(seller.getSubscriptions);
-    }
-    subscriptionList = subscriptionList.where((subscription) {
-      return DateTime.parse(subscription.endDate).isAfter(DateTime.now());
-    }).toList();
-    subscriptionList = subscriptionList.where((subscription) {
-      return subscription.getColumn.getVmId == selectedVendingMachine.getId;
-    }).toList();
-    for (var x in subscriptionList) {
-      prodList.addAll(x.getProducts);
-    }
+    await Provider.of<UserCartDataProvider>(context, listen: false).getData();
 
-    setState(() {
-      isLoading = false;
+    if (!mounted) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      setState(() {
+        filteredProdList =
+            Provider.of<UserCartDataProvider>(context, listen: false).prodList;
+        isLoading = false;
+      });
     });
+  }
+
+  void _showQuantityDialog(Products prod) {
+    int prodQty = prod.getQty;
+    int selectedQuantity = 1;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Enter Quantity'),
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    onPressed: selectedQuantity > 1
+                        ? () {
+                            setState(() {
+                              selectedQuantity--;
+                            });
+                          }
+                        : null,
+                    icon: const Icon(Icons.remove),
+                  ),
+                  Text(
+                    selectedQuantity.toString(),
+                    style: const TextStyle(fontSize: 20),
+                  ),
+                  IconButton(
+                    onPressed: selectedQuantity < prodQty
+                        ? () {
+                            setState(() {
+                              selectedQuantity++;
+                            });
+                          }
+                        : null,
+                    icon: const Icon(Icons.add),
+                  ),
+                ],
+              );
+            },
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (selectedQuantity > 0) {
+                  Provider.of<UserCartDataProvider>(context, listen: false)
+                      .addToCart(prod, selectedQuantity);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Please enter a valid quantity'),
+                    ),
+                  );
+                }
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Widget _buildShimmerLoading() {
@@ -76,17 +165,183 @@ class _UserPurchasingPageState extends State<UserPurchasingPage> {
 
   Widget _buildProductCard() {
     return GridView.builder(
-      itemCount: 8,
+      itemCount: filteredProdList.length,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         crossAxisSpacing: 8.0,
+        mainAxisSpacing: 8.0,
         childAspectRatio: 0.75,
       ),
       itemBuilder: (context, index) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Card(
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
+        Products prod = filteredProdList[index];
+        bool isAvailable = prod.getQty > 0;
+
+        return GestureDetector(
+          onTap: isAvailable
+              ? () {
+                  _showQuantityDialog(prod);
+                }
+              : null,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: Container(
+                    height: MediaQuery.of(context).size.height / 4,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      color: isAvailable
+                          ? Theme.of(context).colorScheme.tertiaryContainer
+                          : Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withOpacity(0.1),
+                      boxShadow: isAvailable
+                          ? [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                blurRadius: 5,
+                                offset: const Offset(0, 2),
+                              ),
+                            ]
+                          : [],
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 100,
+                          height: 100,
+                          clipBehavior: Clip.hardEdge,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            color: isAvailable
+                                ? Theme.of(context).cardColor
+                                : Colors.grey.shade300,
+                            border: Border.all(
+                              color: isAvailable
+                                  ? Theme.of(context).dividerColor
+                                  : Colors.grey,
+                            ),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: prod.getImageUrl == null
+                                ? Image.asset(
+                                    "assets/logo/logo.png",
+                                    fit: BoxFit.cover,
+                                    color: isAvailable
+                                        ? null
+                                        : Colors.grey.withOpacity(0.5),
+                                    colorBlendMode: BlendMode.modulate,
+                                  )
+                                : ColorFiltered(
+                                    colorFilter: isAvailable
+                                        ? const ColorFilter.mode(
+                                            Colors.transparent,
+                                            BlendMode.multiply)
+                                        : const ColorFilter.mode(
+                                            Colors.grey, BlendMode.saturation),
+                                    child: Image.network(
+                                      prod.getImageUrl!,
+                                      loadingBuilder: (BuildContext context,
+                                          Widget child,
+                                          ImageChunkEvent? loadingProgress) {
+                                        if (loadingProgress == null) {
+                                          return child;
+                                        } else {
+                                          return Center(
+                                            child: CircularProgressIndicator(
+                                              value: loadingProgress
+                                                          .expectedTotalBytes !=
+                                                      null
+                                                  ? loadingProgress
+                                                          .cumulativeBytesLoaded /
+                                                      (loadingProgress
+                                                              .expectedTotalBytes ??
+                                                          1)
+                                                  : null,
+                                            ),
+                                          );
+                                        }
+                                      },
+                                    ),
+                                  ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Center(
+                          child: Text(
+                            prod.getDesc,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                  color: isAvailable
+                                      ? Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.color
+                                      : Colors.grey,
+                                ),
+                          ),
+                        ),
+                        Text(
+                          numberFormat.format(prod.getSellingPrice),
+                          style:
+                              Theme.of(context).textTheme.titleSmall?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 18,
+                                    color: isAvailable
+                                        ? Theme.of(context)
+                                            .textTheme
+                                            .titleSmall
+                                            ?.color
+                                        : Colors.grey,
+                                  ),
+                        ),
+                        const SizedBox(height: 12),
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: isAvailable
+                                ? Theme.of(context).colorScheme.primary
+                                : Colors.grey,
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 8.0, horizontal: 16),
+                            child: Text(
+                              isAvailable ? 'Add' : 'Not Available',
+                              style: TextStyle(
+                                  color: isAvailable
+                                      ? (Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.black
+                                          : Colors.white)
+                                      : Colors.white,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                if (!isAvailable)
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey.withOpacity(0.4),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
         );
       },
@@ -96,7 +351,14 @@ class _UserPurchasingPageState extends State<UserPurchasingPage> {
   @override
   void initState() {
     super.initState();
-    getSellerList();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getSellerList();
+      setState(() {
+        _itemCount = Provider.of<UserCartDataProvider>(context, listen: false)
+            .cart
+            .length;
+      });
+    });
   }
 
   @override
@@ -105,6 +367,132 @@ class _UserPurchasingPageState extends State<UserPurchasingPage> {
         child: Scaffold(
       appBar: AppBar(
         title: const Text("Products"),
+      ),
+      floatingActionButton: Consumer<UserCartDataProvider>(
+        builder: (context, provider, child) {
+          _itemCount = provider.cart.length;
+
+          return Stack(
+            clipBehavior: Clip.none,
+            children: [
+              FloatingActionButton(
+                onPressed: () {
+                  if (provider.cart.isEmpty) {
+                    Fluttertoast.showToast(
+                        msg: "Your cart is empty, please add something.");
+                  } else {
+                    Navigator.push(
+                        context,
+                        PageRouteBuilder(
+                            pageBuilder: (context, animation,
+                                    secondaryAnimation) =>
+                                UserCart(
+                                  onPaymentSelected: (paymentMethod) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content: Text(
+                                              'Payment Method: $paymentMethod success!')),
+                                    );
+                                    final sellerList =
+                                        Provider.of<UserCartDataProvider>(
+                                                context,
+                                                listen: false)
+                                            .sellerList;
+
+                                    final cart =
+                                        Provider.of<UserCartDataProvider>(
+                                                context,
+                                                listen: false)
+                                            .cart;
+
+                                    bool found = false;
+                                    Set<Sellers> sellerUpdated = {};
+                                    for (var x in cart.entries) {
+                                      found = false;
+                                      for (var seller in sellerList) {
+                                        for (var subscription
+                                            in seller.getSubscriptions) {
+                                          if (subscription.getProducts
+                                              .contains(x.key)) {
+                                            sellerUpdated.add(seller);
+                                            found = true;
+                                            break;
+                                          }
+                                        }
+                                        if (found) {
+                                          break;
+                                        }
+                                      }
+                                    }
+
+                                    final CloudDatabase db = CloudDatabase();
+                                    for (var seller in sellerUpdated) {
+                                      db.save(
+                                          CloudDatabase.seller, seller.toJson(),
+                                          docId: seller.getId);
+                                    }
+
+                                    final userProvider =
+                                        Provider.of<UserProvider>(context,
+                                            listen: false);
+                                    PurchaseHistory purchaseHistory =
+                                        PurchaseHistory(
+                                            userId: userProvider
+                                                .getCurrentUser!.getId!,
+                                            prodList: cart,
+                                            purchaseDate: DateTime.now()
+                                                .toIso8601String(),
+                                            redeem: false);
+                                    db.save(CloudDatabase.purchaseHistory,
+                                        purchaseHistory.toJson());
+                                  },
+                                ),
+                            transitionsBuilder: (context, animation,
+                                secondaryAnimation, child) {
+                              const begin = Offset(1.0, 0.0);
+                              const end = Offset.zero;
+                              const curve = Curves.ease;
+
+                              var tween = Tween(begin: begin, end: end)
+                                  .chain(CurveTween(curve: curve));
+
+                              return SlideTransition(
+                                position: animation.drive(tween),
+                                child: child,
+                              );
+                            }));
+                  }
+                },
+                child: const Icon(Icons.shopping_cart),
+              ),
+              if (_itemCount > 0)
+                Positioned(
+                  right: -6,
+                  top: -6,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                    constraints: const BoxConstraints(
+                      minWidth: 20,
+                      minHeight: 20,
+                    ),
+                    child: Text(
+                      '$_itemCount',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+            ],
+          );
+        },
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
@@ -116,13 +504,18 @@ class _UserPurchasingPageState extends State<UserPurchasingPage> {
                 padding: EdgeInsets.all(8.0),
                 child: Icon(Icons.search),
               ),
+              hintText: "Search...",
               controller: _searchController,
+              onChanged: (query) {
+                _filterProducts(query);
+              },
             ),
-            const SizedBox(
-              height: 10,
-            ),
-            Expanded(
-              child: isLoading ? _buildShimmerLoading() : _buildProductCard(),
+            Consumer<UserCartDataProvider>(
+              builder: (context, provider, child) {
+                return isLoading
+                    ? Expanded(child: _buildShimmerLoading())
+                    : Expanded(child: _buildProductCard());
+              },
             )
           ],
         ),
