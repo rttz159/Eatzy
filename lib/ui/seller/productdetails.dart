@@ -394,10 +394,14 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         actions: [
           IconButton(
               onPressed: deleteProduct,
-              icon: const Icon(
-                Icons.remove_circle_outlined,
+              icon: Icon(
+                Icons.remove_circle_outline,
                 size: 28,
+                color: Theme.of(context).colorScheme.error,
               )),
+          const SizedBox(
+            width: 10,
+          )
         ],
       ),
       body: SafeArea(

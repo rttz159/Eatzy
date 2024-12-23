@@ -251,13 +251,13 @@ class _SignupScreenState extends State<SignupScreen> {
         icErrorText == null &&
         birthDateErrorText == null) {
       Sellers newUser = Sellers(
-        id: null,
-        uid: null,
-        name: name,
-        email: email,
-        ic: ic,
-        birthDate: selectedDate!.toIso8601String(),
-      );
+          id: null,
+          uid: null,
+          name: name,
+          email: email,
+          ic: ic,
+          birthDate: selectedDate!.toIso8601String(),
+          vouchers: List.empty());
 
       bool success = await _authService.signUpWithDetails(
         email: email,

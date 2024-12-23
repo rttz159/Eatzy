@@ -95,13 +95,13 @@ class _SellersSubscribePageState extends State<SellersSubscribePage> {
                   columns[indexSelected!].setIsAvailable = false;
                   currentSeller.getSubscriptions.add(Subscription(
                       id: currentSeller.getSubscriptions.length.toString(),
+                      sellerId: currentSeller.getId!,
                       startDate: today.toIso8601String(),
                       endDate: today
                           .add(Duration(days: (months * 30)))
                           .toIso8601String(),
                       column: columns[indexSelected!],
-                      products: List.empty(),
-                      vouchers: List.empty()));
+                      products: List.empty()));
                   db.save(CloudDatabase.seller, currentSeller.toJson(),
                       docId: currentSeller.getId);
                   db.save(

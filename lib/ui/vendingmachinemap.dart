@@ -5,6 +5,7 @@ import 'package:assignment/services/connnectivity.dart';
 import 'package:assignment/services/userprovider.dart';
 import 'package:assignment/services/vendingmachineprovider.dart';
 import 'package:assignment/ui/seller/sellersubscribepage.dart';
+import 'package:assignment/ui/user/userpurchasingpage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -516,6 +517,47 @@ class _VendingMachineMapState extends State<VendingMachineMap> {
                                                                   secondaryAnimation) =>
                                                               SellersSubscribePage(
                                                             vendingMachine:
+                                                                _filteredVendingMachine[
+                                                                    idx],
+                                                          ),
+                                                          transitionsBuilder:
+                                                              (context,
+                                                                  animation,
+                                                                  secondaryAnimation,
+                                                                  child) {
+                                                            const begin =
+                                                                Offset(
+                                                                    1.0, 0.0);
+                                                            const end =
+                                                                Offset.zero;
+                                                            const curve =
+                                                                Curves.ease;
+
+                                                            var tween = Tween(
+                                                                    begin:
+                                                                        begin,
+                                                                    end: end)
+                                                                .chain(CurveTween(
+                                                                    curve:
+                                                                        curve));
+
+                                                            return SlideTransition(
+                                                              position: animation
+                                                                  .drive(tween),
+                                                              child: child,
+                                                            );
+                                                          },
+                                                        ),
+                                                      );
+                                                    } else {
+                                                      Navigator.push(
+                                                        context,
+                                                        PageRouteBuilder(
+                                                          pageBuilder: (context,
+                                                                  animation,
+                                                                  secondaryAnimation) =>
+                                                              UserPurchasingPage(
+                                                            selectedVendingMachine:
                                                                 _filteredVendingMachine[
                                                                     idx],
                                                           ),
