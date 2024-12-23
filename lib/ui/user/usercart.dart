@@ -8,7 +8,8 @@ import 'package:intl/intl.dart' as intl;
 import 'package:provider/provider.dart';
 
 class UserCart extends StatefulWidget {
-  final void Function(String paymentMethod) onPaymentSelected;
+  final void Function(String paymentMethod, String? voucherCode)
+      onPaymentSelected;
 
   const UserCart({super.key, required this.onPaymentSelected});
 
@@ -25,12 +26,17 @@ class _UserCartState extends State<UserCart> {
   double totalAmount = 0;
   bool _isLoading = false;
 
+  // Adding a TextEditingController for voucher input
+  final TextEditingController _voucherController = TextEditingController();
+
   void _handlePayment(String paymentMethod) {
     setState(() {
       _isLoading = true;
     });
 
-    widget.onPaymentSelected(paymentMethod);
+    // Pass the voucher code (can be null)
+    widget.onPaymentSelected(paymentMethod,
+        _voucherController.text.isNotEmpty ? _voucherController.text : null);
 
     setState(() {
       _isLoading = false;
@@ -98,6 +104,12 @@ class _UserCartState extends State<UserCart> {
   }
 
   @override
+  void dispose() {
+    _voucherController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
@@ -109,82 +121,80 @@ class _UserCartState extends State<UserCart> {
               child: LoadingAnimationWidget.staggeredDotsWave(
                   color: Theme.of(context).primaryColor, size: 20),
             )
-          : Column(mainAxisSize: MainAxisSize.min, children: [
-              const SizedBox(
-                height: 10,
-              ),
-              Card(
-                elevation: 10,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Center(
-                        child: Image.network(
-                          selectedVendingMachine.getImageUrl!,
-                          height: 80,
-                          width: 100,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                      const SizedBox(width: 15),
-                      Flexible(
-                        flex: 1,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              selectedVendingMachine.getDesc,
-                              textAlign: TextAlign.start,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 3,
-                              style: const TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.w500),
-                            ),
-                            vendingMachineAddress == null
-                                ? const Text("No Address found")
-                                : Text(
-                                    vendingMachineAddress!,
-                                    textAlign: TextAlign.start,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 3,
-                                    style: const TextStyle(fontSize: 14),
-                                  ),
-                          ],
-                        ),
-                      ),
-                    ],
+          : SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(
+                    height: 10,
                   ),
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Products:',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                  Card(
+                    elevation: 10,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Center(
+                            child: Image.network(
+                              selectedVendingMachine.getImageUrl!,
+                              height: 80,
+                              width: 100,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                          const SizedBox(width: 15),
+                          Flexible(
+                            flex: 1,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  selectedVendingMachine.getDesc,
+                                  textAlign: TextAlign.start,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 3,
+                                  style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                                vendingMachineAddress == null
+                                    ? const Text("No Address found")
+                                    : Text(
+                                        vendingMachineAddress!,
+                                        textAlign: TextAlign.start,
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 3,
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 10),
-                      cartList.isEmpty
-                          ? const Expanded(
-                              child: Center(
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Products:',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 10),
+                        cartList.isEmpty
+                            ? const Center(
                                 child: Text(
                                     "Your cart is empty, please add something."),
-                              ),
-                            )
-                          : Expanded(
-                              child: ListView.builder(
-                                itemCount: cartList.length,
-                                itemBuilder: (context, index) {
-                                  final item = cartList[index];
+                              )
+                            : Column(
+                                children: cartList.map((item) {
                                   return ListTile(
                                     leading: GestureDetector(
                                       onTap: () {
@@ -209,51 +219,68 @@ class _UserCartState extends State<UserCart> {
                                         'Price: RM ${numberFormat.format(item.key.getSellingPrice)}'),
                                     trailing: Text('Qty: ${item.value}'),
                                   );
-                                },
+                                }).toList(),
                               ),
-                            ),
-                      const Divider(thickness: 1),
-                      Text(
-                        'Total: RM ${totalAmount.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                        const SizedBox(
+                          height: 20,
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                      const Text(
-                        'Select Payment Method:',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 10),
-                      Wrap(
-                        children: [
-                          ElevatedButton(
-                            onPressed: () => _handlePayment('Credit Card'),
-                            child: const Text('Pay with Credit Card'),
+                        const Divider(thickness: 1),
+                        Text(
+                          'Total: RM ${totalAmount.toStringAsFixed(2)}',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
                           ),
-                          const SizedBox(
-                            width: 10,
+                        ),
+                        const SizedBox(height: 20),
+                        const Text(
+                          'Enter Voucher (Optional):',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 10),
+                        TextField(
+                          controller: _voucherController,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            hintText: 'Enter Voucher Code (if any)',
                           ),
-                          ElevatedButton(
-                            onPressed: () => _handlePayment('PayPal'),
-                            child: const Text('Pay with PayPal'),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          ElevatedButton(
-                            onPressed: () => _handlePayment('Bank Transfer'),
-                            child: const Text('Pay with Bank Transfer'),
-                          ),
-                        ],
-                      ),
-                    ],
+                        ),
+                        const SizedBox(height: 20),
+                        const Text(
+                          'Select Payment Method:',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 10),
+                        Wrap(
+                          children: [
+                            ElevatedButton(
+                              onPressed: () => _handlePayment('Credit Card'),
+                              child: const Text('Pay with Credit Card'),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            ElevatedButton(
+                              onPressed: () => _handlePayment('PayPal'),
+                              child: const Text('Pay with PayPal'),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            ElevatedButton(
+                              onPressed: () => _handlePayment('Bank Transfer'),
+                              child: const Text('Pay with Bank Transfer'),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
+                ],
               ),
-            ]),
+            ),
     ));
   }
 }

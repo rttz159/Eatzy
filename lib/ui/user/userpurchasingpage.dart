@@ -387,7 +387,7 @@ class _UserPurchasingPageState extends State<UserPurchasingPage> {
                             pageBuilder: (context, animation,
                                     secondaryAnimation) =>
                                 UserCart(
-                                  onPaymentSelected: (paymentMethod) {
+                                  onPaymentSelected: (paymentMethod, voucher) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                           content: Text(
@@ -435,6 +435,8 @@ class _UserPurchasingPageState extends State<UserPurchasingPage> {
                                     final userProvider =
                                         Provider.of<UserProvider>(context,
                                             listen: false);
+
+                                    //TODO: Find voucher and add its id to the purchaseHistory
                                     PurchaseHistory purchaseHistory =
                                         PurchaseHistory(
                                             userId: userProvider
