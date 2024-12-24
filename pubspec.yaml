@@ -60,6 +60,7 @@ dependencies:
   uuid: any
   geocoding: any
   path_provider: any
+  qr_flutter: any
 
 dev_dependencies:
   flutter_test:

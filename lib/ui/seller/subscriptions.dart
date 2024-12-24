@@ -172,6 +172,10 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
             break;
         }
 
+        if (usedSubscription.isEmpty) {
+          return const Center(child: Text("There are no results"));
+        }
+
         late Map<String, VendingMachine>? vendingMachineMap;
         if (isConnected) {
           final vendingMachines = vendingMachineProvider.vendingMachines;

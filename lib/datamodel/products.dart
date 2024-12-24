@@ -8,6 +8,7 @@ class Products {
   late int qty;
   late String subId;
   late String bestBefore;
+  late String sellerId;
   late String? imageUrl;
 
   Products({
@@ -18,6 +19,7 @@ class Products {
     required this.qty,
     required this.subId,
     required this.bestBefore,
+    required this.sellerId,
     this.imageUrl,
   }) {
     id ??= const Uuid().v1().toString();
@@ -33,6 +35,7 @@ class Products {
       subId: map['subId'] as String,
       bestBefore: map['bestBefore'] as String,
       imageUrl: map['imageUrl'] as String?,
+      sellerId: map['sellerId'] as String,
     );
   }
 
@@ -43,6 +46,7 @@ class Products {
   int get getQty => qty;
   String get getSubId => subId;
   String get getBestBefore => bestBefore;
+  String get getSellerId => bestBefore;
   String? get getImageUrl => imageUrl;
 
   set setId(String value) => id = value;
@@ -52,6 +56,7 @@ class Products {
   set setQty(int value) => qty = value;
   set setSubId(String value) => subId = value;
   set setBestBefore(String value) => bestBefore = value;
+  set setSellerId(String value) => sellerId = value;
   set setImageUrl(String? value) => imageUrl = value;
 
   Map<String, dynamic> toJson() {
@@ -64,6 +69,7 @@ class Products {
       'subId': subId,
       'imageUrl': imageUrl,
       'bestBefore': bestBefore,
+      'sellerId': sellerId,
     };
   }
 }

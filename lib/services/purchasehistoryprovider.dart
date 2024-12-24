@@ -27,9 +27,11 @@ class PurchaseHistoryProvider extends ChangeNotifier {
         .collection(collectionPath)
         .snapshots()
         .listen((snapshot) async {
-      _purchaseHistoryList = snapshot.docs
-          .map((doc) => PurchaseHistory.fromJson(doc.data()))
-          .toList();
+      _purchaseHistoryList = snapshot.docs.map((doc) {
+        var temp = PurchaseHistory.fromJson(doc.data());
+        temp.id = doc.id;
+        return temp;
+      }).toList();
       notifyListeners();
       await _saveDocumentsLocally();
     });

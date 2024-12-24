@@ -26,7 +26,6 @@ class _UserCartState extends State<UserCart> {
   double totalAmount = 0;
   bool _isLoading = false;
 
-  // Adding a TextEditingController for voucher input
   final TextEditingController _voucherController = TextEditingController();
 
   void _handlePayment(String paymentMethod) {
@@ -34,7 +33,6 @@ class _UserCartState extends State<UserCart> {
       _isLoading = true;
     });
 
-    // Pass the voucher code (can be null)
     widget.onPaymentSelected(paymentMethod,
         _voucherController.text.isNotEmpty ? _voucherController.text : null);
 

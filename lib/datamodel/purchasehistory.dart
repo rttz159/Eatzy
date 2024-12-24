@@ -31,13 +31,23 @@ class PurchaseHistory {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
       'userId': userId,
       'voucherId': voucherId,
       'prodList': _encodeProdList(prodList),
       'purchaseDate': purchaseDate,
       'redeem': redeem,
     };
+  }
+
+  double getTotalAmount() {
+    double totalAmount = 0;
+    if (prodList.isEmpty) {
+      return totalAmount;
+    }
+    for (var x in prodList.entries) {
+      totalAmount += (x.key.getSellingPrice * x.value);
+    }
+    return totalAmount;
   }
 
   static Map<Products, int> _decodeProdList(dynamic prodListJson) {

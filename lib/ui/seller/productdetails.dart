@@ -210,7 +210,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
           qty: qty!,
           subId: subscription.getId!,
           bestBefore: selectedDate!.toIso8601String(),
-          imageUrl: _selectedImageUrl);
+          imageUrl: _selectedImageUrl,
+          sellerId: currentSeller.getId!);
       CloudDatabase db = CloudDatabase();
       subscription.getProducts.add(tempProd);
       db.save(CloudDatabase.seller, currentSeller.toJson(),
