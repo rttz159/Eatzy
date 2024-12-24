@@ -15,6 +15,7 @@ class UserCartDataProvider extends ChangeNotifier {
 
   UserCartDataProvider() {
     _cart = {};
+    _sellerList = [];
   }
 
   Future<void> getData() async {
@@ -40,8 +41,21 @@ class UserCartDataProvider extends ChangeNotifier {
     for (var x in _subscriptionList) {
       _prodList.addAll(x.getProducts);
     }
+    _sortProducts();
     isFetchingData = false;
     notifyListeners();
+  }
+
+  void _sortProducts() {
+    _prodList.sort((a, b) {
+      if (a.qty > 0 && b.qty == 0) {
+        return -1;
+      } else if (a.qty == 0 && b.qty > 0) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
   }
 
   set selectedVendingMachine(VendingMachine vendingMachine) {
@@ -61,6 +75,7 @@ class UserCartDataProvider extends ChangeNotifier {
 
   set prodList(List<Products> products) {
     _prodList = products;
+    _sortProducts();
     notifyListeners();
   }
 

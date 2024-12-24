@@ -1,4 +1,5 @@
 import 'package:assignment/services/connectivityprovider.dart';
+import 'package:assignment/services/sellerpageprovider.dart';
 import 'package:assignment/services/userprovider.dart';
 import 'package:assignment/ui/vendingmachinemap.dart';
 import 'package:flutter/material.dart';
@@ -113,7 +114,11 @@ class _SellerHomePageState extends State<SellerHomePage> {
                     Icons.discount_outlined,
                     color: Colors.black,
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    final provider =
+                        Provider.of<SellerPageProvider>(context, listen: false);
+                    provider.changeTab(2);
+                  },
                   style: ElevatedButton.styleFrom(
                     elevation: 4,
                     backgroundColor:

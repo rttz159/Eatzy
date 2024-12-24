@@ -1,6 +1,9 @@
 import 'package:assignment/datamodel/purchasehistory.dart';
+import 'package:assignment/datamodel/sellers.dart';
+import 'package:assignment/services/clouddatabase.dart';
 import 'package:assignment/ui/arguidance.dart';
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:intl/intl.dart' as intl;
 
@@ -15,6 +18,42 @@ class UserRedeemPage extends StatefulWidget {
 class _UserRedeemPageState extends State<UserRedeemPage> {
   final dateFormatter = intl.DateFormat("dd/MM/yyyy hh:mm a");
   late PurchaseHistory purchase = widget.purchase;
+  late double percentage;
+  bool isLoading = false;
+
+  Future<void> getPercentage() async {
+    setState(() {
+      isLoading = true;
+    });
+    if (purchase.voucherId == null) {
+      setState(() {
+        percentage = 0.0;
+        isLoading = false;
+      });
+      return;
+    }
+    CloudDatabase db = CloudDatabase();
+    List<Sellers> sellerList = (await db.read(CloudDatabase.seller)).map((n) {
+      return Sellers.fromJson(n);
+    }).toList();
+    for (var x in sellerList) {
+      for (var y in x.getVouchers) {
+        if (purchase.voucherId! == y.getId!) {
+          setState(() {
+            percentage = (y.getPercentage / 100);
+            isLoading = false;
+          });
+          return;
+        }
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getPercentage();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,11 +90,12 @@ class _UserRedeemPageState extends State<UserRedeemPage> {
           )
         ],
       ),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
+      body: isLoading
+          ? Center(
+              child: LoadingAnimationWidget.progressiveDots(
+                  color: Theme.of(context).primaryColor, size: 70),
+            )
+          : Stack(
               children: [
                 Padding(
                   padding: const EdgeInsets.symmetric(
@@ -68,8 +108,7 @@ class _UserRedeemPageState extends State<UserRedeemPage> {
                         width: double.infinity,
                         child: Card(
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16.0, vertical: 8),
+                            padding: const EdgeInsets.all(16.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -120,23 +159,21 @@ class _UserRedeemPageState extends State<UserRedeemPage> {
                           ),
                         ),
                       ),
-                      SizedBox(
-                        width: double.infinity,
-                        child: Card(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16.0, vertical: 8),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  'Products:',
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                const SizedBox(height: 10),
-                                Column(
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 14),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Products:',
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(height: 10),
+                              SingleChildScrollView(
+                                child: Column(
                                   children:
                                       purchase.prodList.entries.map((item) {
                                     return ListTile(
@@ -147,132 +184,146 @@ class _UserRedeemPageState extends State<UserRedeemPage> {
                                     );
                                   }).toList(),
                                 ),
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                const Divider(thickness: 1),
-                                const SizedBox(height: 20),
-                                Text(
-                                  'Total: RM ${purchase.getTotalAmount().toStringAsFixed(2)}',
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 20),
-                                const Text(
-                                  'Voucher Used:',
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                const SizedBox(height: 10),
-                                purchase.voucherId == null
-                                    ? const Text(
-                                        'None',
-                                      )
-                                    : Text("${purchase.voucherId}"),
-                                const SizedBox(
-                                  height: 50,
-                                )
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(8, 16, 8, 50),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const Divider(thickness: 1),
+                            const Text(
+                              'Voucher Used:',
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 10),
+                            purchase.voucherId == null
+                                ? const Text(
+                                    'None',
+                                  )
+                                : Text("${purchase.voucherId}"),
+                            const SizedBox(height: 20),
+                            purchase.voucherId == null
+                                ? Text(
+                                    'Total: RM ${purchase.getTotalAmount().toStringAsFixed(2)}',
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  )
+                                : Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Total After Apply Voucher: RM ${(purchase.getTotalAmount() * (1.0 - percentage)).toStringAsFixed(2)}',
+                                        style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text(
+                                          "You saved RM${(purchase.getTotalAmount() * (percentage)).toStringAsFixed(2)}"),
+                                    ],
+                                  ),
+                          ],
+                        ),
+                      )
                     ],
                   ),
                 ),
+                DraggableScrollableSheet(
+                  snap: true,
+                  initialChildSize: 0.05,
+                  minChildSize: 0.05,
+                  maxChildSize: 0.6,
+                  builder: (context, scrollController) {
+                    List<Widget> children = [
+                      Divider(
+                        color: Colors.grey,
+                        height: 0,
+                        thickness: 4,
+                        indent: MediaQuery.of(context).size.width / 3,
+                        endIndent: MediaQuery.of(context).size.width / 3,
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                    ];
+
+                    if (!purchase.redeem) {
+                      children.addAll([
+                        const Text(
+                          "This QR code should be shown at the vending machine.",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        const SizedBox(
+                          height: 40,
+                        ),
+                        Center(
+                          child: QrImageView(
+                            data: purchase.id!,
+                            version: QrVersions.auto,
+                            size: 320,
+                            gapless: false,
+                            backgroundColor: Colors.white,
+                          ),
+                        )
+                      ]);
+                    } else {
+                      children.addAll([
+                        const Text(
+                          "You have redeemed the food!",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        Center(
+                          child: Image.asset(
+                            "assets/logo/logo_filled.png",
+                            width: 320,
+                          ),
+                        )
+                      ]);
+                    }
+
+                    return Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Colors.white
+                            : Colors.black,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 10,
+                            offset: const Offset(0, -5),
+                          ),
+                        ],
+                      ),
+                      child: SingleChildScrollView(
+                        controller: scrollController,
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: children,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ],
             ),
-          ),
-          DraggableScrollableSheet(
-            snap: true,
-            initialChildSize: 0.05,
-            minChildSize: 0.05,
-            maxChildSize: 0.6,
-            builder: (context, scrollController) {
-              List<Widget> children = [
-                Divider(
-                  color: Colors.grey,
-                  height: 0,
-                  thickness: 4,
-                  indent: MediaQuery.of(context).size.width / 3,
-                  endIndent: MediaQuery.of(context).size.width / 3,
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-              ];
-
-              if (!purchase.redeem) {
-                children.addAll([
-                  const Text(
-                    "This QR code should be shown at the vending machine.",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  const SizedBox(
-                    height: 40,
-                  ),
-                  Center(
-                    child: QrImageView(
-                      data: purchase.id!,
-                      version: QrVersions.auto,
-                      size: 320,
-                      gapless: false,
-                      backgroundColor: Colors.white,
-                    ),
-                  )
-                ]);
-              } else {
-                children.addAll([
-                  const Text(
-                    "You have redeemed the food!",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  Center(
-                    child: Image.asset(
-                      "assets/logo/logo_filled.png",
-                      width: 320,
-                    ),
-                  )
-                ]);
-              }
-
-              return Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Theme.of(context).brightness == Brightness.light
-                      ? Colors.white
-                      : Colors.black,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 10,
-                      offset: const Offset(0, -5),
-                    ),
-                  ],
-                ),
-                child: SingleChildScrollView(
-                  controller: scrollController,
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: children,
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-        ],
-      ),
     );
   }
 }

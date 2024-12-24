@@ -1,6 +1,7 @@
 import 'package:assignment/ui/user/useraccmanager.dart';
 import 'package:assignment/ui/user/userhomepage.dart';
 import 'package:assignment/ui/user/userorderspage.dart';
+import 'package:assignment/ui/user/uservoucher.dart';
 import 'package:flutter/material.dart';
 
 class UserPageProvider extends ChangeNotifier {
@@ -14,7 +15,7 @@ class UserPageProvider extends ChangeNotifier {
       child: UserOrderPage(),
     ),
     const Center(
-      child: Text("Voucher"),
+      child: UserVoucherPage(),
     ),
     const Center(
       child: UserAccManager(),

@@ -70,7 +70,7 @@ class _UserOrderPageState extends State<UserOrderPage> {
   }
 
   Widget _buildSubscriptionList() {
-    final dateFormatter = intl.DateFormat('dd/MM/yyy');
+    final dateFormatter = intl.DateFormat("dd/MM/yyyy hh:mm a");
     return Consumer3<UserProvider, ConnectivityProvider,
         PurchaseHistoryProvider>(
       builder: (BuildContext context,

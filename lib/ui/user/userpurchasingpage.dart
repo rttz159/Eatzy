@@ -1,8 +1,4 @@
 import 'package:assignment/datamodel/products.dart';
-import 'package:assignment/datamodel/purchasehistory.dart';
-import 'package:assignment/datamodel/sellers.dart';
-import 'package:assignment/services/clouddatabase.dart';
-import 'package:assignment/services/userprovider.dart';
 import 'package:assignment/ui/user/usercart.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -21,6 +17,7 @@ class UserPurchasingPage extends StatefulWidget {
 
 class _UserPurchasingPageState extends State<UserPurchasingPage> {
   final numberFormat = intl.NumberFormat("RM #####0.0#");
+  String? selectedSellerId;
   List<Products> filteredProdList = [];
   final _searchController = TextEditingController();
   bool isLoading = false;
@@ -35,18 +32,25 @@ class _UserPurchasingPageState extends State<UserPurchasingPage> {
       });
       return;
     }
-    if (query.isEmpty) {
-      setState(() {
-        filteredProdList = providerList;
-      });
-    } else {
-      setState(() {
-        filteredProdList = providerList
-            .where((products) =>
-                products.getDesc.toLowerCase().contains(query.toLowerCase()))
-            .toList();
-      });
+
+    List<Products> filtered = providerList;
+
+    if (selectedSellerId != null && selectedSellerId!.isNotEmpty) {
+      filtered = filtered
+          .where((product) => product.sellerId == selectedSellerId)
+          .toList();
     }
+
+    if (query.isNotEmpty) {
+      filtered = filtered
+          .where((product) =>
+              product.getDesc.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    }
+
+    setState(() {
+      filteredProdList = filtered;
+    });
   }
 
   void getSellerList() async {
@@ -164,187 +168,199 @@ class _UserPurchasingPageState extends State<UserPurchasingPage> {
   }
 
   Widget _buildProductCard() {
-    return GridView.builder(
-      itemCount: filteredProdList.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 8.0,
-        mainAxisSpacing: 8.0,
-        childAspectRatio: 0.75,
-      ),
-      itemBuilder: (context, index) {
-        Products prod = filteredProdList[index];
-        bool isAvailable = prod.getQty > 0;
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child: filteredProdList.isEmpty
+          ? const Center(
+              child: Text("No Products"),
+            )
+          : GridView.builder(
+              itemCount: filteredProdList.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 8.0,
+                mainAxisSpacing: 8.0,
+                childAspectRatio: 0.75,
+              ),
+              itemBuilder: (context, index) {
+                Products prod = filteredProdList[index];
+                bool isAvailable = prod.getQty > 0;
 
-        return GestureDetector(
-          onTap: isAvailable
-              ? () {
-                  _showQuantityDialog(prod);
-                }
-              : null,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
-            child: Stack(
-              children: [
-                Positioned.fill(
-                  child: Container(
-                    height: MediaQuery.of(context).size.height / 4,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      color: isAvailable
-                          ? Theme.of(context).colorScheme.tertiaryContainer
-                          : Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withOpacity(0.1),
-                      boxShadow: isAvailable
-                          ? [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
-                                blurRadius: 5,
-                                offset: const Offset(0, 2),
-                              ),
-                            ]
-                          : [],
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: 100,
-                          height: 100,
-                          clipBehavior: Clip.hardEdge,
+                return GestureDetector(
+                  onTap: isAvailable
+                      ? () {
+                          _showQuantityDialog(prod);
+                        }
+                      : null,
+                  child: Stack(
+                    children: [
+                      Positioned.fill(
+                        child: Container(
+                          height: MediaQuery.of(context).size.height / 4,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(15),
                             color: isAvailable
-                                ? Theme.of(context).cardColor
-                                : Colors.grey.shade300,
-                            border: Border.all(
-                              color: isAvailable
-                                  ? Theme.of(context).dividerColor
-                                  : Colors.grey,
-                            ),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: prod.getImageUrl == null
-                                ? Image.asset(
-                                    "assets/logo/logo.png",
-                                    fit: BoxFit.cover,
-                                    color: isAvailable
-                                        ? null
-                                        : Colors.grey.withOpacity(0.5),
-                                    colorBlendMode: BlendMode.modulate,
-                                  )
-                                : ColorFiltered(
-                                    colorFilter: isAvailable
-                                        ? const ColorFilter.mode(
-                                            Colors.transparent,
-                                            BlendMode.multiply)
-                                        : const ColorFilter.mode(
-                                            Colors.grey, BlendMode.saturation),
-                                    child: Image.network(
-                                      prod.getImageUrl!,
-                                      loadingBuilder: (BuildContext context,
-                                          Widget child,
-                                          ImageChunkEvent? loadingProgress) {
-                                        if (loadingProgress == null) {
-                                          return child;
-                                        } else {
-                                          return Center(
-                                            child: CircularProgressIndicator(
-                                              value: loadingProgress
-                                                          .expectedTotalBytes !=
-                                                      null
-                                                  ? loadingProgress
-                                                          .cumulativeBytesLoaded /
-                                                      (loadingProgress
-                                                              .expectedTotalBytes ??
-                                                          1)
-                                                  : null,
-                                            ),
-                                          );
-                                        }
-                                      },
+                                ? Theme.of(context)
+                                    .colorScheme
+                                    .tertiaryContainer
+                                : Theme.of(context)
+                                    .colorScheme
+                                    .onSurface
+                                    .withOpacity(0.1),
+                            boxShadow: isAvailable
+                                ? [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.2),
+                                      blurRadius: 5,
+                                      offset: const Offset(0, 2),
                                     ),
-                                  ),
+                                  ]
+                                : [],
                           ),
-                        ),
-                        const SizedBox(height: 10),
-                        Center(
-                          child: Text(
-                            prod.getDesc,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 100,
+                                height: 100,
+                                clipBehavior: Clip.hardEdge,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
                                   color: isAvailable
-                                      ? Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium
-                                          ?.color
-                                      : Colors.grey,
-                                ),
-                          ),
-                        ),
-                        Text(
-                          numberFormat.format(prod.getSellingPrice),
-                          style:
-                              Theme.of(context).textTheme.titleSmall?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 18,
+                                      ? Theme.of(context).cardColor
+                                      : Colors.grey.shade300,
+                                  border: Border.all(
                                     color: isAvailable
-                                        ? Theme.of(context)
-                                            .textTheme
-                                            .titleSmall
-                                            ?.color
+                                        ? Theme.of(context).dividerColor
                                         : Colors.grey,
                                   ),
-                        ),
-                        const SizedBox(height: 12),
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: isAvailable
-                                ? Theme.of(context).colorScheme.primary
-                                : Colors.grey,
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 8.0, horizontal: 16),
-                            child: Text(
-                              isAvailable ? 'Add' : 'Not Available',
-                              style: TextStyle(
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: prod.getImageUrl == null
+                                      ? Image.asset(
+                                          "assets/logo/logo.png",
+                                          fit: BoxFit.cover,
+                                          color: isAvailable
+                                              ? null
+                                              : Colors.grey.withOpacity(0.5),
+                                          colorBlendMode: BlendMode.modulate,
+                                        )
+                                      : ColorFiltered(
+                                          colorFilter: isAvailable
+                                              ? const ColorFilter.mode(
+                                                  Colors.transparent,
+                                                  BlendMode.multiply)
+                                              : const ColorFilter.mode(
+                                                  Colors.grey,
+                                                  BlendMode.saturation),
+                                          child: Image.network(
+                                            prod.getImageUrl!,
+                                            loadingBuilder:
+                                                (BuildContext context,
+                                                    Widget child,
+                                                    ImageChunkEvent?
+                                                        loadingProgress) {
+                                              if (loadingProgress == null) {
+                                                return child;
+                                              } else {
+                                                return Center(
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    value: loadingProgress
+                                                                .expectedTotalBytes !=
+                                                            null
+                                                        ? loadingProgress
+                                                                .cumulativeBytesLoaded /
+                                                            (loadingProgress
+                                                                    .expectedTotalBytes ??
+                                                                1)
+                                                        : null,
+                                                  ),
+                                                );
+                                              }
+                                            },
+                                          ),
+                                        ),
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              Center(
+                                child: Text(
+                                  prod.getDesc,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                        color: isAvailable
+                                            ? Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium
+                                                ?.color
+                                            : Colors.grey,
+                                      ),
+                                ),
+                              ),
+                              Text(
+                                numberFormat.format(prod.getSellingPrice),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleSmall
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 18,
+                                      color: isAvailable
+                                          ? Theme.of(context)
+                                              .textTheme
+                                              .titleSmall
+                                              ?.color
+                                          : Colors.grey,
+                                    ),
+                              ),
+                              const SizedBox(height: 12),
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
                                   color: isAvailable
-                                      ? (Theme.of(context).brightness ==
-                                              Brightness.dark
-                                          ? Colors.black
-                                          : Colors.white)
-                                      : Colors.white,
-                                  fontWeight: FontWeight.bold),
+                                      ? Theme.of(context).colorScheme.primary
+                                      : Colors.grey,
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 8.0, horizontal: 16),
+                                  child: Text(
+                                    isAvailable ? 'Add' : 'Not Available',
+                                    style: TextStyle(
+                                        color: isAvailable
+                                            ? (Theme.of(context).brightness ==
+                                                    Brightness.dark
+                                                ? Colors.black
+                                                : Colors.white)
+                                            : Colors.white,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      if (!isAvailable)
+                        Positioned.fill(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey.withOpacity(0.4),
+                              borderRadius: BorderRadius.circular(15),
                             ),
                           ),
                         ),
-                      ],
-                    ),
+                    ],
                   ),
-                ),
-                if (!isAvailable)
-                  Positioned.fill(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey.withOpacity(0.4),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                    ),
-                  ),
-              ],
+                );
+              },
             ),
-          ),
-        );
-      },
     );
   }
 
@@ -367,6 +383,40 @@ class _UserPurchasingPageState extends State<UserPurchasingPage> {
         child: Scaffold(
       appBar: AppBar(
         title: const Text("Products"),
+        actions: [
+          Consumer<UserCartDataProvider>(
+            builder: (context, provider, child) {
+              return DropdownButton<String>(
+                hint: const Text("Filter by Seller"),
+                value: selectedSellerId,
+                items: provider.sellerList.isEmpty
+                    ? []
+                    : [
+                        const DropdownMenuItem<String>(
+                          value: null,
+                          child: Text("All"),
+                        ),
+                        ...provider.sellerList
+                            .map((seller) => DropdownMenuItem<String>(
+                                  value: seller.id,
+                                  child: Text(seller.name),
+                                )),
+                      ],
+                onChanged: provider.sellerList.isEmpty
+                    ? null
+                    : (value) {
+                        setState(() {
+                          selectedSellerId = value;
+                          _filterProducts(_searchController.text);
+                        });
+                      },
+              );
+            },
+          ),
+          const SizedBox(
+            width: 10,
+          )
+        ],
       ),
       floatingActionButton: Consumer<UserCartDataProvider>(
         builder: (context, provider, child) {
@@ -382,87 +432,26 @@ class _UserPurchasingPageState extends State<UserPurchasingPage> {
                         msg: "Your cart is empty, please add something.");
                   } else {
                     Navigator.push(
-                        context,
-                        PageRouteBuilder(
-                            pageBuilder: (context, animation,
-                                    secondaryAnimation) =>
-                                UserCart(
-                                  onPaymentSelected: (paymentMethod, voucher) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                          content: Text(
-                                              'Payment Method: $paymentMethod success!')),
-                                    );
-                                    final sellerList =
-                                        Provider.of<UserCartDataProvider>(
-                                                context,
-                                                listen: false)
-                                            .sellerList;
+                      context,
+                      PageRouteBuilder(
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) =>
+                                  const UserCart(),
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
+                            const begin = Offset(1.0, 0.0);
+                            const end = Offset.zero;
+                            const curve = Curves.ease;
 
-                                    final cart =
-                                        Provider.of<UserCartDataProvider>(
-                                                context,
-                                                listen: false)
-                                            .cart;
+                            var tween = Tween(begin: begin, end: end)
+                                .chain(CurveTween(curve: curve));
 
-                                    bool found = false;
-                                    Set<Sellers> sellerUpdated = {};
-                                    for (var x in cart.entries) {
-                                      found = false;
-                                      for (var seller in sellerList) {
-                                        for (var subscription
-                                            in seller.getSubscriptions) {
-                                          if (subscription.getProducts
-                                              .contains(x.key)) {
-                                            sellerUpdated.add(seller);
-                                            found = true;
-                                            break;
-                                          }
-                                        }
-                                        if (found) {
-                                          break;
-                                        }
-                                      }
-                                    }
-
-                                    final CloudDatabase db = CloudDatabase();
-                                    for (var seller in sellerUpdated) {
-                                      db.save(
-                                          CloudDatabase.seller, seller.toJson(),
-                                          docId: seller.getId);
-                                    }
-
-                                    final userProvider =
-                                        Provider.of<UserProvider>(context,
-                                            listen: false);
-
-                                    //TODO: Find voucher and add its id to the purchaseHistory
-                                    PurchaseHistory purchaseHistory =
-                                        PurchaseHistory(
-                                            userId: userProvider
-                                                .getCurrentUser!.getId!,
-                                            prodList: cart,
-                                            purchaseDate: DateTime.now()
-                                                .toIso8601String(),
-                                            redeem: false);
-                                    db.save(CloudDatabase.purchaseHistory,
-                                        purchaseHistory.toJson());
-                                  },
-                                ),
-                            transitionsBuilder: (context, animation,
-                                secondaryAnimation, child) {
-                              const begin = Offset(1.0, 0.0);
-                              const end = Offset.zero;
-                              const curve = Curves.ease;
-
-                              var tween = Tween(begin: begin, end: end)
-                                  .chain(CurveTween(curve: curve));
-
-                              return SlideTransition(
-                                position: animation.drive(tween),
-                                child: child,
-                              );
-                            }));
+                            return SlideTransition(
+                              position: animation.drive(tween),
+                              child: child,
+                            );
+                          }),
+                    );
                   }
                 },
                 child: const Icon(Icons.shopping_cart),

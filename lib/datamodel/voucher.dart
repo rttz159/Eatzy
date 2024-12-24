@@ -19,7 +19,7 @@ class Voucher {
       desc: map['description'] as String,
       startDate: map['startDate'] as String,
       endDate: map['endDate'] as String,
-      percentage: map['percentage'] as double,
+      percentage: double.parse(map['percentage']),
     );
   }
 
@@ -59,7 +59,7 @@ class Voucher {
       "description": desc,
       "startDate": startDate,
       "endDate": endDate,
-      "percentage": percentage,
+      "percentage": percentage.toStringAsFixed(2),
     };
   }
 }

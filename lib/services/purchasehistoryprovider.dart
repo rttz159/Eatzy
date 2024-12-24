@@ -16,6 +16,7 @@ class PurchaseHistoryProvider extends ChangeNotifier {
 
   Future<void> _initialize() async {
     await loadDocumentsFromLocal();
+    _sortPurchaseHistoryList();
     notifyListeners();
     _startListening();
   }
@@ -32,6 +33,7 @@ class PurchaseHistoryProvider extends ChangeNotifier {
         temp.id = doc.id;
         return temp;
       }).toList();
+      _sortPurchaseHistoryList();
       notifyListeners();
       await _saveDocumentsLocally();
     });
@@ -69,6 +71,15 @@ class PurchaseHistoryProvider extends ChangeNotifier {
       _purchaseHistoryList = jsonList
           .map((json) => PurchaseHistory.fromJson(json as Map<String, dynamic>))
           .toList();
+      _sortPurchaseHistoryList();
     }
+  }
+
+  void _sortPurchaseHistoryList() {
+    _purchaseHistoryList.sort((a, b) {
+      final dateA = DateTime.parse(a.purchaseDate);
+      final dateB = DateTime.parse(b.purchaseDate);
+      return dateA.compareTo(dateB);
+    });
   }
 }

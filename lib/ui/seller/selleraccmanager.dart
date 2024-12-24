@@ -162,7 +162,12 @@ class _SellerAccManagerState extends State<SellerAccManager> {
                         ),
                       ),
                       child: ListTile(
-                        onTap: () {},
+                        onTap: () {
+                          final provider = Provider.of<SellerPageProvider>(
+                              context,
+                              listen: false);
+                          provider.changeTab(2);
+                        },
                         title: const Text(
                           "Your Vouchers",
                           style: TextStyle(

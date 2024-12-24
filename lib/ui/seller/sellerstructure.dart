@@ -27,7 +27,7 @@ class _SellerStructureState extends State<SellerStructure> {
               BottomNavigationBarItem(
                   icon: Icon(Icons.menu_sharp), label: "Subscriptions"),
               BottomNavigationBarItem(
-                  icon: Icon(Icons.analytics_outlined), label: "Analytics"),
+                  icon: Icon(Icons.discount_outlined), label: "Voucher"),
               BottomNavigationBarItem(
                   icon: Icon(Icons.account_circle_rounded), label: "Account"),
             ],

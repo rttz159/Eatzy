@@ -1,5 +1,6 @@
 import 'package:assignment/ui/seller/selleraccmanager.dart';
 import 'package:assignment/ui/seller/sellerhomepage.dart';
+import 'package:assignment/ui/seller/sellervoucher.dart';
 import 'package:assignment/ui/seller/subscriptions.dart';
 import 'package:flutter/material.dart';
 
@@ -14,7 +15,7 @@ class SellerPageProvider extends ChangeNotifier {
       child: SubscriptionPage(),
     ),
     const Center(
-      child: Text("Voucher"),
+      child: SellerVoucherPage(),
     ),
     const Center(
       child: SellerAccManager(),
