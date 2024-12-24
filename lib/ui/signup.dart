@@ -323,7 +323,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         height: 20,
                       ),
                       const Text(
-                        "Normal User",
+                        "Consumer",
                         style: TextStyle(fontSize: 20),
                       ),
                     ],
@@ -360,7 +360,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       height: 20,
                     ),
                     const Text(
-                      "Seller Registration",
+                      "Merchants",
                       style: TextStyle(fontSize: 20),
                     ),
                   ],
@@ -394,7 +394,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       width: 180,
                     ),
                     const Text(
-                      "Sign Up for Normal User",
+                      "Sign Up for Consumer",
                       style: TextStyle(fontSize: 25),
                     ),
                   ],
@@ -518,7 +518,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       width: 180,
                     ),
                     const Text(
-                      "Sign Up for Sellers",
+                      "Sign Up for Merchants",
                       style: TextStyle(fontSize: 25),
                     ),
                   ],

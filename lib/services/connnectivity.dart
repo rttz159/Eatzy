@@ -7,15 +7,13 @@ class MyConnectivityChecker {
   MyConnectivityChecker._();
 
   static final _instance = MyConnectivityChecker._();
+  factory MyConnectivityChecker() => _instance;
+
   static MyConnectivityChecker get instance => _instance;
   final _connectivity = Connectivity();
   bool _hasInternetConn = false;
   late StreamSubscription _connSub;
   late StreamSubscription _internetSub;
-
-  factory MyConnectivityChecker() {
-    return _instance;
-  }
 
   ///Checking for the connection type for once, whether it is mobile, wifi or none
   Future<String> checkConnectivityTypeOnce() async {

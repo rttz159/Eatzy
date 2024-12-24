@@ -1,3 +1,4 @@
+import 'package:assignment/services/connectivityprovider.dart';
 import 'package:assignment/services/userpageprovider.dart';
 import 'package:assignment/services/userprovider.dart';
 import 'package:assignment/ui/vendingmachinemap.dart';
@@ -28,6 +29,11 @@ class _UserHomePageState extends State<UserHomePage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 64, 16, 0),
@@ -51,50 +57,59 @@ class _UserHomePageState extends State<UserHomePage> {
           Row(
             children: [
               Expanded(
-                child: ElevatedButton.icon(
-                  icon: const Icon(
-                    Icons.list,
-                    color: Colors.black,
-                  ),
-                  onPressed: () => Navigator.push(
-                    context,
-                    PageRouteBuilder(
-                        pageBuilder: (context, animation, secondaryAnimation) =>
-                            const VendingMachineMap(),
-                        transitionsBuilder:
-                            (context, animation, secondaryAnimation, child) {
-                          const begin = Offset(1.0, 0.0);
-                          const end = Offset.zero;
-                          const curve = Curves.ease;
+                child: Consumer<ConnectivityProvider>(
+                  builder: (context, value, child) {
+                    return ElevatedButton.icon(
+                      icon: const Icon(
+                        Icons.list,
+                        color: Colors.black,
+                      ),
+                      onPressed: value.isConnected
+                          ? (() {
+                              Navigator.push(
+                                context,
+                                PageRouteBuilder(
+                                    pageBuilder: (context, animation,
+                                            secondaryAnimation) =>
+                                        const VendingMachineMap(),
+                                    transitionsBuilder: (context, animation,
+                                        secondaryAnimation, child) {
+                                      const begin = Offset(1.0, 0.0);
+                                      const end = Offset.zero;
+                                      const curve = Curves.ease;
 
-                          var tween = Tween(begin: begin, end: end)
-                              .chain(CurveTween(curve: curve));
+                                      var tween = Tween(begin: begin, end: end)
+                                          .chain(CurveTween(curve: curve));
 
-                          return SlideTransition(
-                            position: animation.drive(tween),
-                            child: child,
-                          );
-                        }),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    elevation: 4,
-                    backgroundColor:
-                        Theme.of(context).brightness == Brightness.dark
-                            ? const Color(0xFFFABB17)
-                            : Theme.of(context).scaffoldBackgroundColor,
-                    padding: const EdgeInsets.fromLTRB(16, 20, 16, 20),
-                    side: const BorderSide(
-                      color: Color(0xFFFABB17),
-                      width: 1.5,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                  ),
-                  label: const Text(
-                    "Make Order",
-                    style: TextStyle(color: Colors.black, fontSize: 17),
-                  ),
+                                      return SlideTransition(
+                                        position: animation.drive(tween),
+                                        child: child,
+                                      );
+                                    }),
+                              );
+                            })
+                          : null,
+                      style: ElevatedButton.styleFrom(
+                        elevation: 4,
+                        backgroundColor:
+                            Theme.of(context).brightness == Brightness.dark
+                                ? const Color(0xFFFABB17)
+                                : Theme.of(context).scaffoldBackgroundColor,
+                        padding: const EdgeInsets.fromLTRB(16, 20, 16, 20),
+                        side: const BorderSide(
+                          color: Color(0xFFFABB17),
+                          width: 1.5,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      label: const Text(
+                        "Make Order",
+                        style: TextStyle(color: Colors.black, fontSize: 17),
+                      ),
+                    );
+                  },
                 ),
               ),
               const SizedBox(

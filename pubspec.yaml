@@ -59,6 +59,7 @@ dependencies:
   shimmer: any
   uuid: any
   geocoding: any
+  path_provider: any
 
 dev_dependencies:
   flutter_test:

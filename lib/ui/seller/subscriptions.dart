@@ -1,6 +1,7 @@
 import 'package:assignment/datamodel/sellers.dart';
 import 'package:assignment/datamodel/subscription.dart';
 import 'package:assignment/datamodel/vendingmachine.dart';
+import 'package:assignment/services/connectivityprovider.dart';
 import 'package:assignment/services/userprovider.dart';
 import 'package:assignment/services/vendingmachineprovider.dart';
 import 'package:assignment/ui/seller/stockmanagement.dart';
@@ -130,11 +131,16 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
   }
 
   Widget _buildSubscriptionList() {
-    return Consumer2<UserProvider, VendingMachineProvider>(
-      builder: (BuildContext context, UserProvider userProvider,
-          VendingMachineProvider vendingMachineProvider, Widget? child) {
+    return Consumer3<UserProvider, VendingMachineProvider,
+        ConnectivityProvider>(
+      builder: (BuildContext context,
+          UserProvider userProvider,
+          VendingMachineProvider vendingMachineProvider,
+          ConnectivityProvider connectivityProvider,
+          Widget? child) {
         final currentUser = userProvider.getCurrentUser as Sellers;
         final tempSubscription = currentUser.getSubscriptions;
+        bool isConnected = connectivityProvider.isConnected;
 
         if (tempSubscription.isEmpty) {
           return const Center(child: Text("There are no results"));
@@ -166,11 +172,14 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
             break;
         }
 
-        final vendingMachines = vendingMachineProvider.vendingMachines;
-        final Map<String, VendingMachine> vendingMachineMap = {
-          for (var vendingMachine in vendingMachines)
-            vendingMachine.id!: vendingMachine
-        };
+        late Map<String, VendingMachine>? vendingMachineMap;
+        if (isConnected) {
+          final vendingMachines = vendingMachineProvider.vendingMachines;
+          vendingMachineMap = {
+            for (var vendingMachine in vendingMachines)
+              vendingMachine.id!: vendingMachine
+          };
+        }
 
         return Expanded(
           child: ListView.separated(
@@ -178,9 +187,12 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
             separatorBuilder: (context, index) => const SizedBox(height: 10),
             itemBuilder: (context, index) {
               final subscription = usedSubscription[index];
-              final selectedVM =
-                  vendingMachineMap[subscription.column.getVmId]!;
-              String vendingMachineName = selectedVM.getDesc;
+              String vendingMachineName = "Unnamed Vending Machine";
+              VendingMachine? selectedVM;
+              if (isConnected) {
+                selectedVM = vendingMachineMap![subscription.column.getVmId]!;
+                vendingMachineName = selectedVM.getDesc;
+              }
 
               return ListTile(
                 enabled: DateTime.parse(subscription.endDate)

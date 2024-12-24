@@ -1,17 +1,19 @@
 import 'package:assignment/datamodel/products.dart';
 import 'package:assignment/datamodel/subscription.dart';
 import 'package:assignment/datamodel/vendingmachine.dart';
+import 'package:assignment/services/connectivityprovider.dart';
 import 'package:assignment/ui/seller/productdetails.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class StockManagementPage extends StatefulWidget {
   final Subscription selectedSubscription;
-  final VendingMachine selectedVendingMachine;
+  final VendingMachine? selectedVendingMachine;
 
   const StockManagementPage({
     super.key,
     required this.selectedSubscription,
-    required this.selectedVendingMachine,
+    this.selectedVendingMachine,
   });
 
   @override
@@ -20,7 +22,7 @@ class StockManagementPage extends StatefulWidget {
 
 class _StockManagementPageState extends State<StockManagementPage> {
   late Subscription selectedSubscription;
-  late VendingMachine selectedVendingMachine;
+  late VendingMachine? selectedVendingMachine;
   late List<Products> products;
   late int availableItemCount;
 
@@ -55,40 +57,45 @@ class _StockManagementPageState extends State<StockManagementPage> {
         appBar: AppBar(
           title: const Text("Manage Your Stock"),
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: availableItemCount <= 0
-              ? null
-              : () async {
-                  bool? shouldRebuild = await Navigator.push(
-                    context,
-                    PageRouteBuilder(
-                      pageBuilder: (context, animation, secondaryAnimation) =>
-                          ProductDetailsPage(
-                              subscription: selectedSubscription,
-                              availableItemCount: availableItemCount),
-                      transitionsBuilder:
-                          (context, animation, secondaryAnimation, child) {
-                        const begin = Offset(1.0, 0.0);
-                        const end = Offset.zero;
-                        const curve = Curves.ease;
-                        var tween = Tween(begin: begin, end: end)
-                            .chain(CurveTween(curve: curve));
+        floatingActionButton: Consumer<ConnectivityProvider>(
+          builder: (context, connectivity, child) {
+            return FloatingActionButton(
+              onPressed: (availableItemCount <= 0 || !connectivity.isConnected)
+                  ? null
+                  : () async {
+                      bool? shouldRebuild = await Navigator.push(
+                        context,
+                        PageRouteBuilder(
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) =>
+                                  ProductDetailsPage(
+                                      subscription: selectedSubscription,
+                                      availableItemCount: availableItemCount),
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
+                            const begin = Offset(1.0, 0.0);
+                            const end = Offset.zero;
+                            const curve = Curves.ease;
+                            var tween = Tween(begin: begin, end: end)
+                                .chain(CurveTween(curve: curve));
 
-                        return SlideTransition(
-                          position: animation.drive(tween),
-                          child: child,
-                        );
-                      },
-                    ),
-                  );
+                            return SlideTransition(
+                              position: animation.drive(tween),
+                              child: child,
+                            );
+                          },
+                        ),
+                      );
 
-                  if (shouldRebuild != null && shouldRebuild) {
-                    refreshProductList();
-                  }
-                },
-          child: availableItemCount <= 0
-              ? const Icon(Icons.not_interested_rounded)
-              : const Icon(Icons.add),
+                      if (shouldRebuild != null && shouldRebuild) {
+                        refreshProductList();
+                      }
+                    },
+              child: (availableItemCount <= 0 || !connectivity.isConnected)
+                  ? const Icon(Icons.not_interested_rounded)
+                  : const Icon(Icons.add),
+            );
+          },
         ),
         body: SingleChildScrollView(
           child: Padding(
@@ -104,23 +111,38 @@ class _StockManagementPageState extends State<StockManagementPage> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Center(
-                          child: Image.network(
-                            selectedVendingMachine.getImageUrl!,
-                            height: 80,
-                            width: 100,
-                            fit: BoxFit.contain,
-                          ),
+                          child: (selectedVendingMachine == null)
+                              ? Image.asset(
+                                  "assets/logo/eatzy.png",
+                                  height: 80,
+                                  width: 100,
+                                  fit: BoxFit.contain,
+                                )
+                              : Image.network(
+                                  selectedVendingMachine!.getImageUrl!,
+                                  height: 80,
+                                  width: 100,
+                                  fit: BoxFit.contain,
+                                ),
                         ),
                         const SizedBox(width: 15),
                         Flexible(
                           flex: 1,
-                          child: Text(
-                            selectedVendingMachine.getDesc,
-                            textAlign: TextAlign.start,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 3,
-                            style: const TextStyle(fontSize: 16),
-                          ),
+                          child: (selectedVendingMachine == null)
+                              ? const Text(
+                                  "Unnamed Vending Machine",
+                                  textAlign: TextAlign.start,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 3,
+                                  style: TextStyle(fontSize: 16),
+                                )
+                              : Text(
+                                  selectedVendingMachine!.getDesc,
+                                  textAlign: TextAlign.start,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 3,
+                                  style: const TextStyle(fontSize: 16),
+                                ),
                         ),
                       ],
                     ),

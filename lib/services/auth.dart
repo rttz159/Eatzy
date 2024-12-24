@@ -119,6 +119,11 @@ class AuthService {
       return null;
     } on FirebaseAuthException catch (e) {
       String message = e.message!;
+      if (e.code == 'network-request-failed') {
+        message = "No Internet Connection";
+      } else if (e.code == 'invalid-credential') {
+        message = "Invalid Credentials";
+      }
       Fluttertoast.showToast(msg: message);
       return null;
     }

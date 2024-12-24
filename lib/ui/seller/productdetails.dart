@@ -4,6 +4,7 @@ import 'package:assignment/datamodel/products.dart';
 import 'package:assignment/datamodel/sellers.dart';
 import 'package:assignment/datamodel/subscription.dart';
 import 'package:assignment/services/clouddatabase.dart';
+import 'package:assignment/services/connectivityprovider.dart';
 import 'package:assignment/services/userprovider.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -424,71 +425,83 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                width: 150,
-                height: 150,
-                clipBehavior: Clip.hardEdge,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Theme.of(context).cardColor,
-                  border: Border.all(),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Builder(
-                    builder: (context) {
-                      Widget networkImage(String url) {
-                        return Image.network(
-                          url,
-                          loadingBuilder: (BuildContext context, Widget child,
-                              ImageChunkEvent? loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return Center(
-                              child: CircularProgressIndicator(
-                                value: loadingProgress.expectedTotalBytes !=
-                                        null
-                                    ? loadingProgress.cumulativeBytesLoaded /
-                                        loadingProgress.expectedTotalBytes!
-                                    : null,
+              Consumer<ConnectivityProvider>(
+                builder: (context, connectivity, child) {
+                  return Container(
+                    width: 150,
+                    height: 150,
+                    clipBehavior: Clip.hardEdge,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Theme.of(context).cardColor,
+                      border: Border.all(),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Builder(
+                        builder: (context) {
+                          Widget networkImage(String url) {
+                            return Image.network(
+                              url,
+                              loadingBuilder: (BuildContext context,
+                                  Widget child,
+                                  ImageChunkEvent? loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                    value: loadingProgress.expectedTotalBytes !=
+                                            null
+                                        ? loadingProgress
+                                                .cumulativeBytesLoaded /
+                                            loadingProgress.expectedTotalBytes!
+                                        : null,
+                                  ),
+                                );
+                              },
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(
+                                Icons.error,
+                                color: Colors.red,
                               ),
                             );
-                          },
-                          errorBuilder: (context, error, stackTrace) =>
-                              const Icon(
-                            Icons.error,
-                            color: Colors.red,
-                          ),
-                        );
-                      }
-
-                      Widget getImage() {
-                        if (products == null) {
-                          if (isEditing) {
-                            return _selectedImageUrl == null
-                                ? Image.asset("assets/logo/logo_filled.png")
-                                : networkImage(_selectedImageUrl!);
-                          } else {
-                            return Image.asset("assets/logo/logo_filled.png");
                           }
-                        } else {
-                          if (isEditing) {
-                            return _selectedImageUrl == null
-                                ? (products!.imageUrl == null
+
+                          Widget getImage() {
+                            if (!connectivity.isConnected) {
+                              return Image.asset("assets/logo/logo_filled.png");
+                            }
+
+                            if (products == null) {
+                              if (isEditing) {
+                                return _selectedImageUrl == null
                                     ? Image.asset("assets/logo/logo_filled.png")
-                                    : networkImage(products!.imageUrl!))
-                                : networkImage(_selectedImageUrl!);
-                          } else {
-                            return products!.imageUrl == null
-                                ? Image.asset("assets/logo/logo_filled.png")
-                                : networkImage(products!.imageUrl!);
+                                    : networkImage(_selectedImageUrl!);
+                              } else {
+                                return Image.asset(
+                                    "assets/logo/logo_filled.png");
+                              }
+                            } else {
+                              if (isEditing) {
+                                return _selectedImageUrl == null
+                                    ? (products!.imageUrl == null
+                                        ? Image.asset(
+                                            "assets/logo/logo_filled.png")
+                                        : networkImage(products!.imageUrl!))
+                                    : networkImage(_selectedImageUrl!);
+                              } else {
+                                return products!.imageUrl == null
+                                    ? Image.asset("assets/logo/logo_filled.png")
+                                    : networkImage(products!.imageUrl!);
+                              }
+                            }
                           }
-                        }
-                      }
 
-                      return getImage();
-                    },
-                  ),
-                ),
+                          return getImage();
+                        },
+                      ),
+                    ),
+                  );
+                },
               ),
               IconButton(
                 onPressed: isEditing ? _pickImageFromUrl : null,
@@ -570,35 +583,47 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   isLoading
                       ? LoadingAnimationWidget.staggeredDotsWave(
                           color: Theme.of(context).primaryColor, size: 20)
-                      : ElevatedButton(
-                          onPressed:
-                              products == null ? createProduct : updateProduct,
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 12, horizontal: 32),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12)),
-                            elevation: 5,
-                          ),
-                          child: products == null
-                              ? const Text("Create")
-                              : const Text("Update"),
+                      : Consumer<ConnectivityProvider>(
+                          builder: (context, connectivity, child) {
+                            return ElevatedButton(
+                              onPressed: connectivity.isConnected
+                                  ? (products == null
+                                      ? createProduct
+                                      : updateProduct)
+                                  : null,
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 12, horizontal: 32),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12)),
+                                elevation: 5,
+                              ),
+                              child: products == null
+                                  ? const Text("Create")
+                                  : const Text("Update"),
+                            );
+                          },
                         ),
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        isEditing = true;
-                      });
-                    },
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 12, horizontal: 32),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                      elevation: 5,
-                    ),
-                    child: const Text("Edit"),
-                  ),
+                  Consumer<ConnectivityProvider>(
+                      builder: (context, connectivity, child) {
+                    return ElevatedButton(
+                      onPressed: connectivity.isConnected
+                          ? () {
+                              setState(() {
+                                isEditing = true;
+                              });
+                            }
+                          : null,
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 32),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                        elevation: 5,
+                      ),
+                      child: const Text("Edit"),
+                    );
+                  }),
                   ElevatedButton(
                     onPressed: () {
                       _resetEditing();

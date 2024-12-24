@@ -1,3 +1,4 @@
+import 'package:assignment/services/connectivityprovider.dart';
 import 'package:assignment/services/userprovider.dart';
 import 'package:assignment/ui/resetpassword.dart';
 import 'package:assignment/ui/signup.dart';
@@ -71,6 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
       });
 
       if (user != null) {
+        Provider.of<ConnectivityProvider>(context, listen: false).refresh();
         final userprovider = Provider.of<UserProvider>(context, listen: false);
         userprovider.setCurrentUser = user;
         _authService.setCurrentUser = user;

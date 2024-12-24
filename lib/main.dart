@@ -1,5 +1,6 @@
 import 'package:assignment/services/appcyclehandler.dart';
 import 'package:assignment/services/connectivityprovider.dart';
+import 'package:assignment/services/purchasehistoryprovider.dart';
 import 'package:assignment/services/usercartdataprovider.dart';
 import 'package:assignment/services/userprovider.dart';
 import 'package:assignment/services/vendingmachineprovider.dart';
@@ -20,11 +21,10 @@ void main() async {
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (_) => UserProvider()),
-      ChangeNotifierProvider(
-        create: (_) => ConnectivityProvider(),
-      ),
+      ChangeNotifierProvider(create: (_) => ConnectivityProvider()),
       ChangeNotifierProvider(create: (_) => VendingMachineProvider()),
       ChangeNotifierProvider(create: (_) => UserCartDataProvider()),
+      ChangeNotifierProvider(create: (_) => PurchaseHistoryProvider()),
     ],
     child: const MyApp(),
   ));

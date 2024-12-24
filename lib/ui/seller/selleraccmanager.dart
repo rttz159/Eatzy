@@ -1,3 +1,4 @@
+import 'package:assignment/services/connectivityprovider.dart';
 import 'package:assignment/services/sellerpageprovider.dart';
 import 'package:assignment/services/userprovider.dart';
 import 'package:assignment/ui/feedback.dart';
@@ -36,47 +37,53 @@ class _SellerAccManagerState extends State<SellerAccManager> {
                   return Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Container(
-                        width: 100,
-                        height: 100,
-                        clipBehavior: Clip.hardEdge,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: Theme.of(context).cardColor,
-                          border: Border.all(),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: value.getCurrentUser!.getImageUrl == null
-                              ? Image.asset(
-                                  "assets/logo/logo.png",
-                                  fit: BoxFit.cover,
-                                )
-                              : Image.network(
-                                  value.getCurrentUser!.getImageUrl!,
-                                  loadingBuilder: (BuildContext context,
-                                      Widget child,
-                                      ImageChunkEvent? loadingProgress) {
-                                    if (loadingProgress == null) {
-                                      return child;
-                                    } else {
-                                      return Center(
-                                        child: CircularProgressIndicator(
-                                          value: loadingProgress
-                                                      .expectedTotalBytes !=
-                                                  null
-                                              ? loadingProgress
-                                                      .cumulativeBytesLoaded /
-                                                  (loadingProgress
-                                                          .expectedTotalBytes ??
-                                                      1)
-                                              : null,
-                                        ),
-                                      );
-                                    }
-                                  },
-                                ),
-                        ),
+                      Consumer<ConnectivityProvider>(
+                        builder: (context, connectivity, child) {
+                          return Container(
+                            width: 100,
+                            height: 100,
+                            clipBehavior: Clip.hardEdge,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: Theme.of(context).cardColor,
+                              border: Border.all(),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: (value.getCurrentUser!.getImageUrl ==
+                                          null ||
+                                      !connectivity.isConnected)
+                                  ? Image.asset(
+                                      "assets/logo/logo.png",
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Image.network(
+                                      value.getCurrentUser!.getImageUrl!,
+                                      loadingBuilder: (BuildContext context,
+                                          Widget child,
+                                          ImageChunkEvent? loadingProgress) {
+                                        if (loadingProgress == null) {
+                                          return child;
+                                        } else {
+                                          return Center(
+                                            child: CircularProgressIndicator(
+                                              value: loadingProgress
+                                                          .expectedTotalBytes !=
+                                                      null
+                                                  ? loadingProgress
+                                                          .cumulativeBytesLoaded /
+                                                      (loadingProgress
+                                                              .expectedTotalBytes ??
+                                                          1)
+                                                  : null,
+                                            ),
+                                          );
+                                        }
+                                      },
+                                    ),
+                            ),
+                          );
+                        },
                       ),
                       const SizedBox(
                         width: 24,
@@ -233,39 +240,44 @@ class _SellerAccManagerState extends State<SellerAccManager> {
                               color: Theme.of(context).dividerColor, width: 1),
                         ),
                       ),
-                      child: ListTile(
-                        onTap: () => Navigator.push(
-                          context,
-                          PageRouteBuilder(
-                              pageBuilder:
-                                  (context, animation, secondaryAnimation) =>
+                      child: Consumer<ConnectivityProvider>(
+                        builder: (context, connectivity, child) {
+                          return ListTile(
+                            enabled: connectivity.isConnected,
+                            onTap: () => Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                  pageBuilder: (context, animation,
+                                          secondaryAnimation) =>
                                       const FeedbackPage(),
-                              transitionsBuilder: (context, animation,
-                                  secondaryAnimation, child) {
-                                const begin = Offset(1.0, 0.0);
-                                const end = Offset.zero;
-                                const curve = Curves.ease;
+                                  transitionsBuilder: (context, animation,
+                                      secondaryAnimation, child) {
+                                    const begin = Offset(1.0, 0.0);
+                                    const end = Offset.zero;
+                                    const curve = Curves.ease;
 
-                                var tween = Tween(begin: begin, end: end)
-                                    .chain(CurveTween(curve: curve));
+                                    var tween = Tween(begin: begin, end: end)
+                                        .chain(CurveTween(curve: curve));
 
-                                return SlideTransition(
-                                  position: animation.drive(tween),
-                                  child: child,
-                                );
-                              }),
-                        ),
-                        title: const Text(
-                          "Feedback",
-                          style: TextStyle(
-                            fontSize: 18,
-                          ),
-                        ),
-                        leading: const Icon(
-                          Icons.feedback_outlined,
-                          size: 32,
-                        ),
-                        trailing: const Icon(Icons.arrow_forward_ios),
+                                    return SlideTransition(
+                                      position: animation.drive(tween),
+                                      child: child,
+                                    );
+                                  }),
+                            ),
+                            title: const Text(
+                              "Feedback",
+                              style: TextStyle(
+                                fontSize: 18,
+                              ),
+                            ),
+                            leading: const Icon(
+                              Icons.feedback_outlined,
+                              size: 32,
+                            ),
+                            trailing: const Icon(Icons.arrow_forward_ios),
+                          );
+                        },
                       ),
                     ),
                     Container(
@@ -275,39 +287,44 @@ class _SellerAccManagerState extends State<SellerAccManager> {
                               color: Theme.of(context).dividerColor, width: 1),
                         ),
                       ),
-                      child: ListTile(
-                        onTap: () => Navigator.push(
-                          context,
-                          PageRouteBuilder(
-                              pageBuilder:
-                                  (context, animation, secondaryAnimation) =>
+                      child: Consumer<ConnectivityProvider>(
+                        builder: (context, connectivity, child) {
+                          return ListTile(
+                            enabled: connectivity.isConnected,
+                            onTap: () => Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                  pageBuilder: (context, animation,
+                                          secondaryAnimation) =>
                                       const SettingPage(),
-                              transitionsBuilder: (context, animation,
-                                  secondaryAnimation, child) {
-                                const begin = Offset(1.0, 0.0);
-                                const end = Offset.zero;
-                                const curve = Curves.ease;
+                                  transitionsBuilder: (context, animation,
+                                      secondaryAnimation, child) {
+                                    const begin = Offset(1.0, 0.0);
+                                    const end = Offset.zero;
+                                    const curve = Curves.ease;
 
-                                var tween = Tween(begin: begin, end: end)
-                                    .chain(CurveTween(curve: curve));
+                                    var tween = Tween(begin: begin, end: end)
+                                        .chain(CurveTween(curve: curve));
 
-                                return SlideTransition(
-                                  position: animation.drive(tween),
-                                  child: child,
-                                );
-                              }),
-                        ),
-                        title: const Text(
-                          "Settings",
-                          style: TextStyle(
-                            fontSize: 18,
-                          ),
-                        ),
-                        leading: const Icon(
-                          Icons.settings,
-                          size: 32,
-                        ),
-                        trailing: const Icon(Icons.arrow_forward_ios),
+                                    return SlideTransition(
+                                      position: animation.drive(tween),
+                                      child: child,
+                                    );
+                                  }),
+                            ),
+                            title: const Text(
+                              "Settings",
+                              style: TextStyle(
+                                fontSize: 18,
+                              ),
+                            ),
+                            leading: const Icon(
+                              Icons.settings,
+                              size: 32,
+                            ),
+                            trailing: const Icon(Icons.arrow_forward_ios),
+                          );
+                        },
                       ),
                     ),
                     Container(
