@@ -85,18 +85,18 @@ class _UserVoucherPageState extends State<UserVoucherPage> {
                     ),
                     const SizedBox(height: 20),
                     if ((value.getCurrentUser as NormalUser).getIsSpecial)
-                      Column(children: [
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    QRCodePage(voucher: zhvoucher),
-                              ),
-                            );
-                          },
-                          child: Expanded(
+                      Column(
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      QRCodePage(voucher: zhvoucher),
+                                ),
+                              );
+                            },
                             child: Container(
                               padding: const EdgeInsets.all(16),
                               decoration: ShapeDecoration(
@@ -155,9 +155,9 @@ class _UserVoucherPageState extends State<UserVoucherPage> {
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 10),
-                      ]),
+                          const SizedBox(height: 10),
+                        ],
+                      ),
                     Expanded(
                       child: FutureBuilder<List<Sellers>>(
                         future: sellersFuture,
@@ -234,102 +234,110 @@ class _UserVoucherPageState extends State<UserVoucherPage> {
                                             : DateFormat("dd/MM/yyyy")
                                                 .parse(voucher.endDate);
 
-                                        return Column(children: [
-                                          GestureDetector(
-                                            onTap: () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      QRCodePage(
-                                                          voucher: voucher),
-                                                ),
-                                              );
-                                            },
-                                            child: Container(
-                                              width: 355,
-                                              height: 125,
-                                              padding: const EdgeInsets.all(16),
-                                              decoration: ShapeDecoration(
-                                                color:
-                                                    Colors.lightGreen.shade200,
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(18),
-                                                  side: const BorderSide(
-                                                      color: Colors.black12,
-                                                      width: 1),
-                                                ),
-                                              ),
-                                              child: Row(
-                                                children: [
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            right: 16),
-                                                    child: Image.asset(
-                                                      "assets/logo/logo_filled.png",
-                                                      width: 70,
-                                                      height: 70,
-                                                      fit: BoxFit.contain,
-                                                    ),
+                                        return Column(
+                                          children: [
+                                            GestureDetector(
+                                              onTap: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        QRCodePage(
+                                                            voucher: voucher),
                                                   ),
-                                                  Expanded(
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Text(
-                                                          "${voucher.id}",
-                                                          style:
-                                                              const TextStyle(
-                                                            fontSize: 20.0,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            color: Colors.black,
-                                                          ),
-                                                        ),
-                                                        Text(
-                                                          "${voucher.percentage.toInt()}% DISCOUNT",
-                                                          style:
-                                                              const TextStyle(
-                                                            fontSize: 15.0,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            color: Colors.black,
-                                                          ),
-                                                        ),
-                                                        Text(
-                                                          voucher.desc,
-                                                          style:
-                                                              const TextStyle(
-                                                            fontSize: 14.0,
-                                                            color:
-                                                                Colors.black87,
-                                                          ),
-                                                        ),
-                                                        Text(
-                                                          "${DateFormat('dd/MM/yyyy').format(startDate)} to ${DateFormat('dd/MM/yyyy').format(endDate)}",
-                                                          style:
-                                                              const TextStyle(
-                                                            fontSize: 12.0,
-                                                            color:
-                                                                Colors.black45,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
+                                                );
+                                              },
+                                              child: Container(
+                                                width: 355,
+                                                height: 125,
+                                                padding:
+                                                    const EdgeInsets.all(16),
+                                                decoration: ShapeDecoration(
+                                                  color: Colors
+                                                      .lightGreen.shade200,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            18),
+                                                    side: const BorderSide(
+                                                        color: Colors.black12,
+                                                        width: 1),
                                                   ),
-                                                ],
+                                                ),
+                                                child: Row(
+                                                  children: [
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              right: 16),
+                                                      child: Image.asset(
+                                                        "assets/logo/logo_filled.png",
+                                                        width: 70,
+                                                        height: 70,
+                                                        fit: BoxFit.contain,
+                                                      ),
+                                                    ),
+                                                    Expanded(
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          Text(
+                                                            "${voucher.id}",
+                                                            style:
+                                                                const TextStyle(
+                                                              fontSize: 20.0,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              color:
+                                                                  Colors.black,
+                                                            ),
+                                                          ),
+                                                          Text(
+                                                            "${voucher.percentage.toInt()}% DISCOUNT",
+                                                            style:
+                                                                const TextStyle(
+                                                              fontSize: 15.0,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              color:
+                                                                  Colors.black,
+                                                            ),
+                                                          ),
+                                                          Text(
+                                                            voucher.desc,
+                                                            style:
+                                                                const TextStyle(
+                                                              fontSize: 14.0,
+                                                              color: Colors
+                                                                  .black87,
+                                                            ),
+                                                          ),
+                                                          Text(
+                                                            "${DateFormat('dd/MM/yyyy').format(startDate)} to ${DateFormat('dd/MM/yyyy').format(endDate)}",
+                                                            style:
+                                                                const TextStyle(
+                                                              fontSize: 12.0,
+                                                              color: Colors
+                                                                  .black45,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                          const SizedBox(height: 10),
-                                        ]);
+                                            const SizedBox(height: 10),
+                                          ],
+                                        );
                                       }).toList(),
                                     ],
                                   ),
