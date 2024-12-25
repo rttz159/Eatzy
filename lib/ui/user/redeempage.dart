@@ -228,7 +228,7 @@ class _UserRedeemPageState extends State<UserRedeemPage> {
                                         ),
                                       ),
                                       Text(
-                                          "You saved RM${(purchase.getTotalAmount() * (percentage)).toStringAsFixed(2)}"),
+                                          "You saved RM${(purchase.getTotalAmount() * (percentage)).toStringAsFixed(2)} (${(percentage * 100).toStringAsFixed(0)}%)"),
                                     ],
                                   ),
                           ],

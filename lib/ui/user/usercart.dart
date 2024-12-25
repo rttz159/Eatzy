@@ -448,7 +448,7 @@ class _UserCartState extends State<UserCart> {
                                   ),
                                 ),
                                 Text(
-                                    "You saved RM${(totalAmount * (voucher!.getPercentage / 100)).toStringAsFixed(2)}"),
+                                    "You saved RM${(totalAmount * (voucher!.getPercentage / 100)).toStringAsFixed(2)} (${voucher!.getPercentage.toStringAsFixed(0)}%)"),
                                 const SizedBox(
                                   height: 10,
                                 ),
