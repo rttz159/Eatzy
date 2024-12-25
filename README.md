@@ -1,3 +1,7 @@
+Here's the updated version of the instructions, where Java 11 is replaced with Java 17:
+
+---
+
 # BAIT2073 Mobile Application Development Assignment
 
 A Flutter project for Mobile Application Development assignment.
@@ -9,24 +13,28 @@ These instructions will guide you to manually build the app in either **debug** 
 ---
 
 #### Prerequisites:
+
 1. **Ensure Required Tools Are Installed:**
-   - **Java 11:**
+
+   - **Java 17:**
+
      - Verify installation:
        ```bash
        java -version
        ```
        Output should include:
-       ```
-       java version "11.0.x"
+       ```bash
+       java version "17.0.x"
        ```
 
    - **Gradle 8.3:**
+
      - Verify installation:
        ```bash
        gradle -v
        ```
        Output should include:
-       ```
+       ```bash
        Gradle 8.3
        ```
 
@@ -38,7 +46,7 @@ These instructions will guide you to manually build the app in either **debug** 
        Ensure there are no errors.
 
 2. **Configure Android SDK and NDK Paths:**
-   - Confirm that the `local.properties` file in the `android` directory includes the correct SDK and NDK paths. 
+   - Confirm that the `local.properties` file in the `android` directory includes the correct SDK and NDK paths.
    - Example `local.properties` file:
      ```
      sdk.dir=/path/to/Android/sdk
@@ -55,19 +63,23 @@ These instructions will guide you to manually build the app in either **debug** 
 #### Steps to Build the App:
 
 1. **Open a Terminal or Command Prompt:**
+
    - Navigate to the root directory of the Flutter project:
      ```bash
      cd /path/to/your/flutter_project
      ```
 
 2. **Fetch Project Dependencies:**
+
    - Run the following command to fetch all required dependencies:
      ```bash
      flutter pub get
      ```
 
 3. **Building the App:**
+
    - **For Debug Build:**
+
      - Build the app in debug mode:
        ```bash
        flutter build apk --debug
@@ -98,13 +110,16 @@ These instructions will guide you to manually build the app in either **debug** 
 ---
 
 #### Notes:
+
 - **For Debug Builds:** No signing configuration is required; the app uses the default debug keys.
 - **For Release Builds:** Ensure the project has a signing configuration in `android/app/build.gradle` to create a signed APK for production.
 
 ---
 
 #### Troubleshooting:
+
 1. **Gradle Sync Issues:**
+
    - If you encounter Gradle errors, clear the project build cache:
      ```bash
      flutter clean
@@ -113,9 +128,10 @@ These instructions will guide you to manually build the app in either **debug** 
      ```
 
 2. **Java Version Conflicts:**
-   - If the build fails due to an incorrect Java version, ensure Java 11 is active:
+
+   - If the build fails due to an incorrect Java version, ensure Java 17 is active:
      ```bash
-     export JAVA_HOME=/path/to/java11
+     export JAVA_HOME=/path/to/java17
      ```
 
 3. **SDK/NDK Path Errors:**
@@ -123,4 +139,4 @@ These instructions will guide you to manually build the app in either **debug** 
 
 ---
 
-By following these steps, you can successfully build the Flutter app in either debug or release mode.
+By following these steps, you can successfully build the Flutter app in either debug or release mode using Java 17.

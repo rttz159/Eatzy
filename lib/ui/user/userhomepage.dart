@@ -51,8 +51,8 @@ class _UserHomePageState extends State<UserHomePage> {
               );
             },
           ),
-          const SizedBox(
-            height: 40,
+          SizedBox(
+            height: MediaQuery.of(context).size.height / 30,
           ),
           Row(
             children: [
@@ -152,7 +152,8 @@ class _UserHomePageState extends State<UserHomePage> {
             height: 30,
           ),
           CarouselSlider(
-            options: CarouselOptions(height: 450.0, autoPlay: true),
+            options: CarouselOptions(
+                height: MediaQuery.of(context).size.height / 2, autoPlay: true),
             items: ["assets/poster/poster.png", "assets/poster/poster2.png"]
                 .map((url) {
               return Builder(

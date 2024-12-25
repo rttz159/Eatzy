@@ -172,17 +172,21 @@ class _UserRedeemPageState extends State<UserRedeemPage> {
                                     fontSize: 18, fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(height: 10),
-                              SingleChildScrollView(
-                                child: Column(
-                                  children:
-                                      purchase.prodList.entries.map((item) {
-                                    return ListTile(
-                                      title: Text(item.key.getDesc),
-                                      subtitle: Text(
-                                          'Price: RM ${(item.key.getSellingPrice).toStringAsFixed(2)}'),
-                                      trailing: Text('Qty: ${item.value}'),
-                                    );
-                                  }).toList(),
+                              Expanded(
+                                child: Scrollbar(
+                                  child: SingleChildScrollView(
+                                    child: Column(
+                                      children:
+                                          purchase.prodList.entries.map((item) {
+                                        return ListTile(
+                                          title: Text(item.key.getDesc),
+                                          subtitle: Text(
+                                              'Price: RM ${(item.key.getSellingPrice).toStringAsFixed(2)}'),
+                                          trailing: Text('Qty: ${item.value}'),
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ),
                                 ),
                               ),
                             ],
@@ -190,7 +194,7 @@ class _UserRedeemPageState extends State<UserRedeemPage> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(8, 16, 8, 50),
+                        padding: const EdgeInsets.fromLTRB(8, 8, 8, 50),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -241,7 +245,7 @@ class _UserRedeemPageState extends State<UserRedeemPage> {
                   snap: true,
                   initialChildSize: 0.05,
                   minChildSize: 0.05,
-                  maxChildSize: 0.6,
+                  maxChildSize: 1.0,
                   builder: (context, scrollController) {
                     List<Widget> children = [
                       Divider(

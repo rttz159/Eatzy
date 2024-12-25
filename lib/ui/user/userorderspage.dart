@@ -24,47 +24,49 @@ class _UserOrderPageState extends State<UserOrderPage> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
-        child: Column(
-          children: [
-            const Center(
-                child: Text(
-              "Orders",
-              style: TextStyle(fontSize: 22),
-            )),
-            const SizedBox(
-              height: 20,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: List.generate(buttonText.length, (index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(100, 40),
-                      backgroundColor: selectedButtonIndex == index
-                          ? Theme.of(context).colorScheme.inversePrimary
-                          : Theme.of(context).dialogBackgroundColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+      child: Column(
+        children: [
+          SizedBox(
+            height: MediaQuery.of(context).size.height / 30,
+          ),
+          const Center(
+              child: Text(
+            "Orders",
+            style: TextStyle(fontSize: 22),
+          )),
+          SizedBox(
+            height: MediaQuery.of(context).size.height / 30,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: List.generate(buttonText.length, (index) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(100, 40),
+                    backgroundColor: selectedButtonIndex == index
+                        ? Theme.of(context).colorScheme.inversePrimary
+                        : Theme.of(context).dialogBackgroundColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    onPressed: () {
-                      setState(() {
-                        selectedButtonIndex = index;
-                      });
-                    },
-                    child: Text(buttonText[index]),
                   ),
-                );
-              }),
-            ),
-            const SizedBox(height: 50),
-            _isLoading ? _buildShimmerLoading() : _buildSubscriptionList(),
-          ],
-        ),
+                  onPressed: () {
+                    setState(() {
+                      selectedButtonIndex = index;
+                    });
+                  },
+                  child: Text(buttonText[index]),
+                ),
+              );
+            }),
+          ),
+          SizedBox(
+            height: MediaQuery.of(context).size.height / 40,
+          ),
+          _isLoading ? _buildShimmerLoading() : _buildSubscriptionList(),
+        ],
       ),
     );
   }
@@ -83,7 +85,6 @@ class _UserOrderPageState extends State<UserOrderPage> {
             purchaseHistoryProvider.purchaseHistoryList.where((purchase) {
           return purchase.userId == currentUser.getId;
         }).toList();
-        print(purchaseHistoryList.length);
 
         if (purchaseHistoryList.isEmpty) {
           return const Center(child: Text("There are no order"));
@@ -121,61 +122,67 @@ class _UserOrderPageState extends State<UserOrderPage> {
         }
 
         return Expanded(
-          child: ListView.separated(
-            itemCount: userPurchaseHistory.length,
-            separatorBuilder: (context, index) => const SizedBox(height: 10),
-            itemBuilder: (context, index) {
-              final purchaseHistory = userPurchaseHistory[index];
+          child: Scrollbar(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: ListView.separated(
+                itemCount: userPurchaseHistory.length,
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 10),
+                itemBuilder: (context, index) {
+                  final purchaseHistory = userPurchaseHistory[index];
 
-              return ListTile(
-                isThreeLine: true,
-                leading: const CircleAvatar(
-                    child: Icon(Icons.receipt_long_outlined)),
-                title: Text(
-                  dateFormatter
-                      .format(DateTime.parse(purchaseHistory.purchaseDate)),
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                subtitle: purchaseHistory.redeem
-                    ? Text(
-                        "RM ${purchaseHistory.getTotalAmount().toStringAsFixed(2)}\nStatus: Redeemed",
-                        style: const TextStyle(fontSize: 14),
-                      )
-                    : Text(
-                        "RM ${purchaseHistory.getTotalAmount().toStringAsFixed(2)}\nStatus: Waiting for Redeem",
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                trailing: const Icon(Icons.arrow_forward_ios),
-                tileColor: Theme.of(context).brightness == Brightness.dark
-                    ? Theme.of(context).colorScheme.secondaryContainer
-                    : Colors.grey.shade100,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                onTap: () => Navigator.push(
-                  context,
-                  PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) =>
-                        UserRedeemPage(
-                      purchase: purchaseHistory,
+                  return ListTile(
+                    isThreeLine: true,
+                    leading: const CircleAvatar(
+                        child: Icon(Icons.receipt_long_outlined)),
+                    title: Text(
+                      dateFormatter
+                          .format(DateTime.parse(purchaseHistory.purchaseDate)),
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold),
                     ),
-                    transitionsBuilder:
-                        (context, animation, secondaryAnimation, child) {
-                      const begin = Offset(1.0, 0.0);
-                      const end = Offset.zero;
-                      const curve = Curves.ease;
-                      var tween = Tween(begin: begin, end: end)
-                          .chain(CurveTween(curve: curve));
-                      return SlideTransition(
-                          position: animation.drive(tween), child: child);
-                    },
-                  ),
-                ),
-              );
-            },
+                    subtitle: purchaseHistory.redeem
+                        ? Text(
+                            "RM ${purchaseHistory.getTotalAmount().toStringAsFixed(2)}\nStatus: Redeemed",
+                            style: const TextStyle(fontSize: 14),
+                          )
+                        : Text(
+                            "RM ${purchaseHistory.getTotalAmount().toStringAsFixed(2)}\nStatus: Waiting for Redeem",
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                    trailing: const Icon(Icons.arrow_forward_ios),
+                    tileColor: Theme.of(context).brightness == Brightness.dark
+                        ? Theme.of(context).colorScheme.secondaryContainer
+                        : Colors.grey.shade100,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 8.0),
+                    onTap: () => Navigator.push(
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) =>
+                            UserRedeemPage(
+                          purchase: purchaseHistory,
+                        ),
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
+                          const begin = Offset(1.0, 0.0);
+                          const end = Offset.zero;
+                          const curve = Curves.ease;
+                          var tween = Tween(begin: begin, end: end)
+                              .chain(CurveTween(curve: curve));
+                          return SlideTransition(
+                              position: animation.drive(tween), child: child);
+                        },
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
           ),
         );
       },

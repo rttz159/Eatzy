@@ -36,23 +36,25 @@ class _VendingMachineMapState extends State<VendingMachineMap> {
   LatLng? selectedLatLng;
 
   void _filterVendingMachines(String query) {
-    if (query.isEmpty) {
-      setState(() {
-        _filteredVendingMachine = _vendingMachine;
-      });
-    } else {
-      setState(() {
-        _filteredVendingMachine = _vendingMachine
-            .where((machine) =>
-                machine.getDesc.toLowerCase().contains(query.toLowerCase()))
-            .toList();
-      });
+    if (mounted) {
+      if (query.isEmpty) {
+        setState(() {
+          _filteredVendingMachine = _vendingMachine;
+        });
+      } else {
+        setState(() {
+          _filteredVendingMachine = _vendingMachine
+              .where((machine) =>
+                  machine.getDesc.toLowerCase().contains(query.toLowerCase()))
+              .toList();
+        });
+      }
+      _sortVendingMachinesByDistance();
     }
-    _sortVendingMachinesByDistance();
   }
 
   void _sortVendingMachinesByDistance() {
-    if (selectedLatLng != null) {
+    if (selectedLatLng != null && mounted) {
       setState(() {
         _filteredVendingMachine.sort((a, b) {
           final distanceA = _calculateDistance(
@@ -97,99 +99,104 @@ class _VendingMachineMapState extends State<VendingMachineMap> {
   }
 
   void _addUserMarker(LatLng position) {
-    setState(() {
-      _userMarker.clear();
-      _userMarker.add(
-        Marker(
-          alignment: Alignment.topCenter,
-          width: 120.0,
-          height: 70.0,
-          point: position,
-          child: Column(
-            children: [
-              Expanded(
-                child: Builder(
-                  builder: (context) {
-                    return Container(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.tertiaryContainer,
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      child: const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          "You are here.",
-                          style: TextStyle(
-                            color: Colors.black,
+    if (mounted) {
+      setState(() {
+        _userMarker.clear();
+        _userMarker.add(
+          Marker(
+            alignment: Alignment.topCenter,
+            width: 120.0,
+            height: 70.0,
+            point: position,
+            child: Column(
+              children: [
+                Expanded(
+                  child: Builder(
+                    builder: (context) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          color:
+                              Theme.of(context).colorScheme.tertiaryContainer,
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text(
+                            "You are here.",
+                            style: TextStyle(
+                              color: Colors.black,
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
-              ),
-              const SizedBox(height: 10),
-              const Icon(
-                Icons.location_pin,
-                color: Colors.red,
-              ),
-            ],
+                const SizedBox(height: 10),
+                const Icon(
+                  Icons.location_pin,
+                  color: Colors.red,
+                ),
+              ],
+            ),
           ),
-        ),
-      );
-    });
+        );
+      });
+    }
   }
 
   void _addVendingMachineMarker(VendingMachine vm) {
-    setState(() {
-      _vendingMachineMarkers.add(
-        Marker(
-          width: 150.0,
-          height: 100.0,
-          alignment: Alignment.topCenter,
-          point: LatLng(double.parse(vm.getLat), double.parse(vm.getLong)),
-          child: Column(
-            children: [
-              Expanded(
-                child: Builder(
-                  builder: (context) {
-                    return Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        side: const BorderSide(
-                          color: Colors.grey,
-                          width: 1,
+    if (mounted) {
+      setState(() {
+        _vendingMachineMarkers.add(
+          Marker(
+            width: 150.0,
+            height: 100.0,
+            alignment: Alignment.topCenter,
+            point: LatLng(double.parse(vm.getLat), double.parse(vm.getLong)),
+            child: Column(
+              children: [
+                Expanded(
+                  child: Builder(
+                    builder: (context) {
+                      return Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          side: const BorderSide(
+                            color: Colors.grey,
+                            width: 1,
+                          ),
                         ),
-                      ),
-                      elevation: 20,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Center(
-                              child: Text(
-                                vm.getDesc,
-                                style: const TextStyle(fontSize: 10),
-                              ),
-                            )
-                          ],
+                        elevation: 20,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Center(
+                                child: Text(
+                                  vm.getDesc,
+                                  style: const TextStyle(fontSize: 10),
+                                ),
+                              )
+                            ],
+                          ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
-              ),
-              const SizedBox(height: 10),
-              const Icon(
-                Icons.location_pin,
-                color: Colors.blue,
-              ),
-            ],
+                const SizedBox(height: 10),
+                const Icon(
+                  Icons.location_pin,
+                  color: Colors.blue,
+                ),
+              ],
+            ),
           ),
-        ),
-      );
-    });
+        );
+      });
+    }
   }
 
   Future<void> getUserPosition() async {
@@ -209,17 +216,25 @@ class _VendingMachineMapState extends State<VendingMachineMap> {
     if (userPosition == null) {
       Fluttertoast.showToast(msg: "Fail to locate the user.");
     } else {
-      _addUserMarker(LatLng(userPosition.latitude, userPosition.longitude));
-      selectedLatLng = LatLng(userPosition.latitude, userPosition.longitude);
-      _sortVendingMachinesByDistance();
-      Fluttertoast.showToast(msg: "User Location Fetched.");
+      if (mounted) {
+        setState(() {
+          _addUserMarker(
+              LatLng(userPosition!.latitude, userPosition.longitude));
+          selectedLatLng =
+              LatLng(userPosition.latitude, userPosition.longitude);
+        });
+        _sortVendingMachinesByDistance();
+        Fluttertoast.showToast(msg: "User Location Fetched.");
+      }
     }
   }
 
   Future<Position?> getPosition() async {
-    setState(() {
-      _isLoading = true;
-    });
+    if (mounted) {
+      setState(() {
+        _isLoading = true;
+      });
+    }
 
     bool internetConnection =
         await _connectivityChecker.checkConnectivityOnce();
@@ -250,9 +265,12 @@ class _VendingMachineMapState extends State<VendingMachineMap> {
         }
 
         if (newPosition != null) {
-          _mapController.move(
-              LatLng(newPosition.latitude, newPosition.longitude), 16.0);
-          selectedLatLng = LatLng(newPosition.latitude, newPosition.longitude);
+          if (mounted) {
+            _mapController.move(
+                LatLng(newPosition.latitude, newPosition.longitude), 16.0);
+            selectedLatLng =
+                LatLng(newPosition.latitude, newPosition.longitude);
+          }
         }
 
         return newPosition;
@@ -262,9 +280,11 @@ class _VendingMachineMapState extends State<VendingMachineMap> {
       Fluttertoast.showToast(msg: "Error fetching location: $e");
       return null;
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -275,12 +295,14 @@ class _VendingMachineMapState extends State<VendingMachineMap> {
     for (var x in provider.vendingMachines) {
       _addVendingMachineMarker(x);
     }
-    setState(() {
-      _vendingMachine = provider.vendingMachines;
-      _filteredVendingMachine = _vendingMachine;
-    });
-    _sortVendingMachinesByDistance();
-    Fluttertoast.showToast(msg: "Vending Machines' data fetched.");
+    if (mounted) {
+      setState(() {
+        _vendingMachine = provider.vendingMachines;
+        _filteredVendingMachine = _vendingMachine;
+      });
+      _sortVendingMachinesByDistance();
+      Fluttertoast.showToast(msg: "Vending Machines' data fetched.");
+    }
   }
 
   @override
@@ -382,237 +404,256 @@ class _VendingMachineMapState extends State<VendingMachineMap> {
                       child: Card(
                           elevation: 15,
                           child: Padding(
-                            padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                            child: ListView(
-                              children: [
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 8.0, horizontal: 16.0),
-                                  child: Text(
-                                    "Results",
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                                  child: Text(
-                                    "We found ${_filteredVendingMachine.length} vending machines for you.",
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.normal,
-                                    ),
-                                  ),
-                                ),
-                                if (_filteredVendingMachine.isEmpty)
-                                  SizedBox(
-                                    child: Card(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Center(
-                                              child: Image.asset(
-                                                "assets/logo/logo_cry_filled.png",
-                                                height: 80,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 10),
-                                            const Center(
-                                                child: Text("No result..")),
-                                          ],
+                            padding: const EdgeInsets.fromLTRB(8, 16, 8, 0),
+                            child: Scrollbar(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 8.0, horizontal: 16.0),
+                                child: ListView(
+                                  children: [
+                                    const Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 16.0),
+                                      child: Text(
+                                        "Results",
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                     ),
-                                  )
-                                else
-                                  ...List.generate(
-                                      _filteredVendingMachine.length, (idx) {
-                                    return SizedBox(
-                                      child: Card(
-                                        elevation: 10,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Flexible(
-                                                flex: 1,
-                                                child: Center(
-                                                  child: Image.network(
-                                                    _filteredVendingMachine[idx]
-                                                        .getImageUrl!,
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          16, 0, 16, 16),
+                                      child: Text(
+                                        "We found ${_filteredVendingMachine.length} vending machines for you.",
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.normal,
+                                        ),
+                                      ),
+                                    ),
+                                    if (_filteredVendingMachine.isEmpty)
+                                      SizedBox(
+                                        child: Card(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Center(
+                                                  child: Image.asset(
+                                                    "assets/logo/logo_cry_filled.png",
                                                     height: 80,
-                                                    width: 100,
-                                                    fit: BoxFit.contain,
-                                                    loadingBuilder: (BuildContext
-                                                            context,
-                                                        Widget child,
-                                                        ImageChunkEvent?
-                                                            loadingProgress) {
-                                                      if (loadingProgress ==
-                                                          null) {
-                                                        return child;
-                                                      } else {
-                                                        return Center(
-                                                          child:
-                                                              CircularProgressIndicator(
-                                                            value: loadingProgress
-                                                                        .expectedTotalBytes !=
-                                                                    null
-                                                                ? loadingProgress
-                                                                        .cumulativeBytesLoaded /
-                                                                    (loadingProgress
-                                                                            .expectedTotalBytes ??
-                                                                        1)
-                                                                : null,
-                                                          ),
-                                                        );
-                                                      }
-                                                    },
                                                   ),
                                                 ),
-                                              ),
-                                              const SizedBox(height: 10),
-                                              Flexible(
-                                                flex: 1,
-                                                child: Center(
-                                                  child: SizedBox(
-                                                    width: 120,
-                                                    child: Text(
-                                                      _filteredVendingMachine[
-                                                              idx]
-                                                          .getDesc,
-                                                      textAlign:
-                                                          TextAlign.start,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      maxLines: 3,
-                                                      style: const TextStyle(
-                                                          fontSize: 14),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                              Flexible(
-                                                flex: 1,
-                                                child: ElevatedButton(
-                                                  onPressed: () {
-                                                    final provider = Provider
-                                                        .of<UserProvider>(
-                                                            context,
-                                                            listen: false);
-                                                    if (provider.getCurrentUser
-                                                        is Sellers) {
-                                                      Navigator.push(
-                                                        context,
-                                                        PageRouteBuilder(
-                                                          pageBuilder: (context,
-                                                                  animation,
-                                                                  secondaryAnimation) =>
-                                                              SellersSubscribePage(
-                                                            vendingMachine:
-                                                                _filteredVendingMachine[
-                                                                    idx],
-                                                          ),
-                                                          transitionsBuilder:
-                                                              (context,
-                                                                  animation,
-                                                                  secondaryAnimation,
-                                                                  child) {
-                                                            const begin =
-                                                                Offset(
-                                                                    1.0, 0.0);
-                                                            const end =
-                                                                Offset.zero;
-                                                            const curve =
-                                                                Curves.ease;
-
-                                                            var tween = Tween(
-                                                                    begin:
-                                                                        begin,
-                                                                    end: end)
-                                                                .chain(CurveTween(
-                                                                    curve:
-                                                                        curve));
-
-                                                            return SlideTransition(
-                                                              position: animation
-                                                                  .drive(tween),
-                                                              child: child,
-                                                            );
-                                                          },
-                                                        ),
-                                                      );
-                                                    } else {
-                                                      Navigator.push(
-                                                        context,
-                                                        PageRouteBuilder(
-                                                          pageBuilder: (context,
-                                                              animation,
-                                                              secondaryAnimation) {
-                                                            return const UserPurchasingPage();
-                                                          },
-                                                          transitionsBuilder:
-                                                              (context,
-                                                                  animation,
-                                                                  secondaryAnimation,
-                                                                  child) {
-                                                            const begin =
-                                                                Offset(
-                                                                    1.0, 0.0);
-                                                            const end =
-                                                                Offset.zero;
-                                                            const curve =
-                                                                Curves.ease;
-
-                                                            var tween = Tween(
-                                                                    begin:
-                                                                        begin,
-                                                                    end: end)
-                                                                .chain(CurveTween(
-                                                                    curve:
-                                                                        curve));
-
-                                                            return SlideTransition(
-                                                              position: animation
-                                                                  .drive(tween),
-                                                              child: child,
-                                                            );
-                                                          },
-                                                        ),
-                                                      );
-
-                                                      WidgetsBinding.instance
-                                                          .addPostFrameCallback(
-                                                              (_) {
-                                                        final provider = Provider
-                                                            .of<UserCartDataProvider>(
-                                                                context,
-                                                                listen: false);
-                                                        provider.cart = {};
-                                                        provider.selectedVendingMachine =
-                                                            _filteredVendingMachine[
-                                                                idx];
-                                                      });
-                                                    }
-                                                  },
-                                                  child: const Text("Select"),
-                                                ),
-                                              ),
-                                            ],
+                                                const SizedBox(height: 10),
+                                                const Center(
+                                                    child: Text("No result..")),
+                                              ],
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    );
-                                  }),
-                              ],
+                                      )
+                                    else
+                                      ...List.generate(
+                                          _filteredVendingMachine.length,
+                                          (idx) {
+                                        return SizedBox(
+                                          child: Card(
+                                            elevation: 10,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Flexible(
+                                                    flex: 1,
+                                                    child: Center(
+                                                      child: Image.network(
+                                                        _filteredVendingMachine[
+                                                                idx]
+                                                            .getImageUrl!,
+                                                        height: 80,
+                                                        width: 100,
+                                                        fit: BoxFit.contain,
+                                                        loadingBuilder:
+                                                            (BuildContext
+                                                                    context,
+                                                                Widget child,
+                                                                ImageChunkEvent?
+                                                                    loadingProgress) {
+                                                          if (loadingProgress ==
+                                                              null) {
+                                                            return child;
+                                                          } else {
+                                                            return Center(
+                                                              child:
+                                                                  CircularProgressIndicator(
+                                                                value: loadingProgress
+                                                                            .expectedTotalBytes !=
+                                                                        null
+                                                                    ? loadingProgress
+                                                                            .cumulativeBytesLoaded /
+                                                                        (loadingProgress.expectedTotalBytes ??
+                                                                            1)
+                                                                    : null,
+                                                              ),
+                                                            );
+                                                          }
+                                                        },
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 10),
+                                                  Flexible(
+                                                    flex: 1,
+                                                    child: Center(
+                                                      child: SizedBox(
+                                                        width: 120,
+                                                        child: Text(
+                                                          _filteredVendingMachine[
+                                                                  idx]
+                                                              .getDesc,
+                                                          textAlign:
+                                                              TextAlign.start,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          maxLines: 3,
+                                                          style:
+                                                              const TextStyle(
+                                                                  fontSize: 14),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Flexible(
+                                                    flex: 1,
+                                                    child: ElevatedButton(
+                                                      onPressed: () {
+                                                        final provider = Provider
+                                                            .of<UserProvider>(
+                                                                context,
+                                                                listen: false);
+                                                        if (provider
+                                                                .getCurrentUser
+                                                            is Sellers) {
+                                                          Navigator.push(
+                                                            context,
+                                                            PageRouteBuilder(
+                                                              pageBuilder: (context,
+                                                                      animation,
+                                                                      secondaryAnimation) =>
+                                                                  SellersSubscribePage(
+                                                                vendingMachine:
+                                                                    _filteredVendingMachine[
+                                                                        idx],
+                                                              ),
+                                                              transitionsBuilder:
+                                                                  (context,
+                                                                      animation,
+                                                                      secondaryAnimation,
+                                                                      child) {
+                                                                const begin =
+                                                                    Offset(1.0,
+                                                                        0.0);
+                                                                const end =
+                                                                    Offset.zero;
+                                                                const curve =
+                                                                    Curves.ease;
+
+                                                                var tween = Tween(
+                                                                        begin:
+                                                                            begin,
+                                                                        end:
+                                                                            end)
+                                                                    .chain(CurveTween(
+                                                                        curve:
+                                                                            curve));
+
+                                                                return SlideTransition(
+                                                                  position: animation
+                                                                      .drive(
+                                                                          tween),
+                                                                  child: child,
+                                                                );
+                                                              },
+                                                            ),
+                                                          );
+                                                        } else {
+                                                          Navigator.push(
+                                                            context,
+                                                            PageRouteBuilder(
+                                                              pageBuilder: (context,
+                                                                  animation,
+                                                                  secondaryAnimation) {
+                                                                return const UserPurchasingPage();
+                                                              },
+                                                              transitionsBuilder:
+                                                                  (context,
+                                                                      animation,
+                                                                      secondaryAnimation,
+                                                                      child) {
+                                                                const begin =
+                                                                    Offset(1.0,
+                                                                        0.0);
+                                                                const end =
+                                                                    Offset.zero;
+                                                                const curve =
+                                                                    Curves.ease;
+
+                                                                var tween = Tween(
+                                                                        begin:
+                                                                            begin,
+                                                                        end:
+                                                                            end)
+                                                                    .chain(CurveTween(
+                                                                        curve:
+                                                                            curve));
+
+                                                                return SlideTransition(
+                                                                  position: animation
+                                                                      .drive(
+                                                                          tween),
+                                                                  child: child,
+                                                                );
+                                                              },
+                                                            ),
+                                                          );
+
+                                                          WidgetsBinding
+                                                              .instance
+                                                              .addPostFrameCallback(
+                                                                  (_) {
+                                                            final provider =
+                                                                Provider.of<
+                                                                        UserCartDataProvider>(
+                                                                    context,
+                                                                    listen:
+                                                                        false);
+                                                            provider.cart = {};
+                                                            provider.selectedVendingMachine =
+                                                                _filteredVendingMachine[
+                                                                    idx];
+                                                          });
+                                                        }
+                                                      },
+                                                      child:
+                                                          const Text("Select"),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      }),
+                                  ],
+                                ),
+                              ),
                             ),
                           )),
                     )),

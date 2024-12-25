@@ -58,9 +58,13 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
               "Subscriptions",
               style: TextStyle(fontSize: 22),
             )),
-            const SizedBox(height: 20),
+            SizedBox(
+              height: MediaQuery.of(context).size.height / 30,
+            ),
             _buildButtonRow(),
-            const SizedBox(height: 50),
+            SizedBox(
+              height: MediaQuery.of(context).size.height / 40,
+            ),
             _isLoading ? _buildShimmerLoading() : _buildSubscriptionList(),
           ],
         ),
@@ -186,63 +190,70 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
         }
 
         return Expanded(
-          child: ListView.separated(
-            itemCount: usedSubscription.length,
-            separatorBuilder: (context, index) => const SizedBox(height: 10),
-            itemBuilder: (context, index) {
-              final subscription = usedSubscription[index];
-              String vendingMachineName = "Unnamed Vending Machine";
-              VendingMachine? selectedVM;
-              if (isConnected) {
-                selectedVM = vendingMachineMap![subscription.column.getVmId]!;
-                vendingMachineName = selectedVM.getDesc;
-              }
+          child: Scrollbar(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: ListView.separated(
+                itemCount: usedSubscription.length,
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 10),
+                itemBuilder: (context, index) {
+                  final subscription = usedSubscription[index];
+                  String vendingMachineName = "Unnamed Vending Machine";
+                  VendingMachine? selectedVM;
+                  if (isConnected) {
+                    selectedVM =
+                        vendingMachineMap![subscription.column.getVmId]!;
+                    vendingMachineName = selectedVM.getDesc;
+                  }
 
-              return ListTile(
-                enabled: DateTime.parse(subscription.endDate)
-                    .isAfter(DateTime.now()),
-                leading:
-                    const CircleAvatar(child: Icon(Icons.view_column_outlined)),
-                title: Text(
-                  vendingMachineName,
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                subtitle: Text(
-                  subscription.getColumn.getId!,
-                  style: const TextStyle(fontSize: 14),
-                ),
-                trailing: const Icon(Icons.arrow_forward_ios),
-                tileColor: Theme.of(context).brightness == Brightness.dark
-                    ? Theme.of(context).colorScheme.secondaryContainer
-                    : Colors.grey.shade100,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                onTap: () => Navigator.push(
-                  context,
-                  PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) =>
-                        StockManagementPage(
-                      selectedSubscription: subscription,
-                      selectedVendingMachine: selectedVM,
+                  return ListTile(
+                    enabled: DateTime.parse(subscription.endDate)
+                        .isAfter(DateTime.now()),
+                    leading: const CircleAvatar(
+                        child: Icon(Icons.view_column_outlined)),
+                    title: Text(
+                      vendingMachineName,
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold),
                     ),
-                    transitionsBuilder:
-                        (context, animation, secondaryAnimation, child) {
-                      const begin = Offset(1.0, 0.0);
-                      const end = Offset.zero;
-                      const curve = Curves.ease;
-                      var tween = Tween(begin: begin, end: end)
-                          .chain(CurveTween(curve: curve));
-                      return SlideTransition(
-                          position: animation.drive(tween), child: child);
-                    },
-                  ),
-                ),
-              );
-            },
+                    subtitle: Text(
+                      subscription.getColumn.getId!,
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                    trailing: const Icon(Icons.arrow_forward_ios),
+                    tileColor: Theme.of(context).brightness == Brightness.dark
+                        ? Theme.of(context).colorScheme.secondaryContainer
+                        : Colors.grey.shade100,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 8.0),
+                    onTap: () => Navigator.push(
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) =>
+                            StockManagementPage(
+                          selectedSubscription: subscription,
+                          selectedVendingMachine: selectedVM,
+                        ),
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
+                          const begin = Offset(1.0, 0.0);
+                          const end = Offset.zero;
+                          const curve = Curves.ease;
+                          var tween = Tween(begin: begin, end: end)
+                              .chain(CurveTween(curve: curve));
+                          return SlideTransition(
+                              position: animation.drive(tween), child: child);
+                        },
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
           ),
         );
       },

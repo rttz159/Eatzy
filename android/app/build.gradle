@@ -12,8 +12,6 @@ android {
     namespace = "my.edu.raymond"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
-    
-    compileSdkVersion 34
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
