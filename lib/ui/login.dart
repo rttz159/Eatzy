@@ -1,3 +1,4 @@
+import 'package:assignment/datamodel/sellers.dart';
 import 'package:assignment/services/connectivityprovider.dart';
 import 'package:assignment/services/userprovider.dart';
 import 'package:assignment/ui/resetpassword.dart';
@@ -77,6 +78,9 @@ class _LoginScreenState extends State<LoginScreen> {
         userprovider.setCurrentUser = user;
         _authService.setCurrentUser = user;
         await userprovider.saveUserToLocalStorage();
+        if (user is Sellers) {
+          await userprovider.refreshNotificationforSeller();
+        }
         Fluttertoast.showToast(msg: "Login successful!");
       }
     } else {

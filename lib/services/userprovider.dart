@@ -2,6 +2,7 @@ import 'package:assignment/datamodel/normalusers.dart';
 import 'package:assignment/datamodel/sellers.dart';
 import 'package:assignment/datamodel/users.dart';
 import 'package:assignment/services/auth.dart';
+import 'package:assignment/services/notificationservice.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -41,6 +42,7 @@ class UserProvider extends ChangeNotifier {
     prefs.remove("currentUser");
     prefs.remove("isSeller");
     _auth.signOut();
+    await NotificationService.flutterLocalNotificationsPlugin.cancelAll();
     notifyListeners();
   }
 
@@ -59,6 +61,27 @@ class UserProvider extends ChangeNotifier {
       }
       notifyListeners();
     }
+  }
+
+  Future<void> refreshNotificationforSeller() async {
+    await NotificationService.flutterLocalNotificationsPlugin.cancelAll();
+    Sellers tempSeller = _currentUser as Sellers;
+    int count = 0;
+    for (var sub in tempSeller.getSubscriptions) {
+      for (var prod in sub.getProducts) {
+        final bestBefore = DateTime.parse(prod.getBestBefore);
+        if (bestBefore.isAfter(DateTime.now())) {
+          await NotificationService.scheduleNotification(
+            Object.hash(prod.getId, prod.getSubId),
+            "Reminder",
+            "Your ${prod.getDesc} in ${sub.getColumn.getId} will expire in 1 day.",
+            bestBefore.subtract(const Duration(days: 1)),
+          );
+          count++;
+        }
+      }
+    }
+    print("Notification scheduled! $count notifications.");
   }
 
   Future<void> saveUserToLocalStorage() async {

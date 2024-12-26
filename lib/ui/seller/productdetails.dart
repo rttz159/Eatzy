@@ -217,6 +217,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       db.save(CloudDatabase.seller, currentSeller.toJson(),
           docId: currentSeller.getId);
       provider.saveUserToLocalStorage();
+      provider.refreshNotificationforSeller();
 
       setState(() {
         isLoading = false;
@@ -318,6 +319,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
           docId: currentSeller.getId);
 
       provider.saveUserToLocalStorage();
+      provider.refreshNotificationforSeller();
 
       setState(() {
         isLoading = false;

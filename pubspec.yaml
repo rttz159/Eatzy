@@ -61,6 +61,8 @@ dependencies:
   geocoding: any
   path_provider: any
   qr_flutter: any
+  flutter_local_notifications: any
+  timezone: any
 
 dev_dependencies:
   flutter_test:

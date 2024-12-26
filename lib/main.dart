@@ -1,5 +1,6 @@
 import 'package:assignment/services/appcyclehandler.dart';
 import 'package:assignment/services/connectivityprovider.dart';
+import 'package:assignment/services/notificationservice.dart';
 import 'package:assignment/services/purchasehistoryprovider.dart';
 import 'package:assignment/services/usercartdataprovider.dart';
 import 'package:assignment/services/userprovider.dart';
@@ -10,12 +11,15 @@ import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'config/theme.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await NotificationService.init();
+  tz.initializeTimeZones();
   final lifecycleHandler = AppLifecycleHandler();
   WidgetsBinding.instance.addObserver(lifecycleHandler);
   runApp(MultiProvider(
