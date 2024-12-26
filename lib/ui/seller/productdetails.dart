@@ -384,8 +384,15 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     _bestbeforeController.text = (products == null
         ? ""
         : format.format(DateTime.parse(products!.getBestBefore)));
-    selectedDate =
-        (products == null ? null : DateTime.parse(products!.getBestBefore));
+    if (DateTime.parse(products!.getBestBefore).isBefore(DateTime.now())) {
+      bestbeforeErrorStr =
+          "The product has expired and will not shown to the user.";
+    }
+    selectedDate = (products == null
+        ? null
+        : (DateTime.parse(products!.getBestBefore).isAfter(DateTime.now()))
+            ? DateTime.parse(products!.getBestBefore)
+            : null);
     isEditing = products == null;
   }
 

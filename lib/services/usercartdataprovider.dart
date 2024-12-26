@@ -39,7 +39,9 @@ class UserCartDataProvider extends ChangeNotifier {
 
     _prodList = [];
     for (var x in _subscriptionList) {
-      _prodList.addAll(x.getProducts);
+      _prodList.addAll(x.getProducts.where((product) {
+        return DateTime.parse(product.getBestBefore).isAfter(DateTime.now());
+      }));
     }
     _sortProducts();
     isFetchingData = false;

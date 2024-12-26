@@ -193,6 +193,9 @@ class _StockManagementPageState extends State<StockManagementPage> {
                       : ListView(
                           shrinkWrap: true,
                           children: products.map((product) {
+                            bool expired = DateTime.parse(product.getBestBefore)
+                                .isBefore(DateTime.now());
+
                             return Container(
                               decoration: BoxDecoration(
                                 border: Border(
@@ -236,10 +239,27 @@ class _StockManagementPageState extends State<StockManagementPage> {
                                 },
                                 title: Text(
                                   product.getDesc,
-                                  style: const TextStyle(fontSize: 18),
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      color:
+                                          expired ? Colors.red.shade400 : null),
                                 ),
-                                leading: const Icon(Icons.rice_bowl, size: 32),
-                                trailing: const Icon(Icons.arrow_forward_ios),
+                                subtitle: expired
+                                    ? Text(
+                                        "Expired",
+                                        style: TextStyle(
+                                            color: Colors.red.shade400),
+                                      )
+                                    : null,
+                                leading: Icon(
+                                  Icons.rice_bowl,
+                                  size: 32,
+                                  color: expired ? Colors.red.shade400 : null,
+                                ),
+                                trailing: Icon(
+                                  Icons.arrow_forward_ios,
+                                  color: expired ? Colors.red.shade400 : null,
+                                ),
                               ),
                             );
                           }).toList(),
