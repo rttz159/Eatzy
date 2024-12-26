@@ -17,6 +17,7 @@ class _UserStructureState extends State<UserStructure> {
         return Scaffold(
           body: PageView(
             controller: value.pageController,
+            onPageChanged: (idx) => value.onChange(idx),
             children: value.pages,
           ),
           bottomNavigationBar: BottomNavigationBar(

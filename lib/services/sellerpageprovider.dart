@@ -35,4 +35,9 @@ class SellerPageProvider extends ChangeNotifier {
     );
     notifyListeners();
   }
+
+  void onChange(int idx) {
+    _selectedTab = idx;
+    notifyListeners();
+  }
 }
