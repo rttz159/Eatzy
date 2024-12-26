@@ -243,15 +243,17 @@ class _SellerVoucherPageState extends State<SellerVoucherPage> {
                         ? Column(
                             children: [
                               TextField(
-                                controller: _idController,
-                                keyboardType: TextInputType.text,
-                                decoration: InputDecoration(
-                                  labelText: "Voucher Code",
-                                  hintText:
-                                      "Alphabets and number without separators",
-                                  errorText: idErrorText,
-                                ),
-                              ),
+                                  controller: _idController,
+                                  keyboardType: TextInputType.text,
+                                  decoration: InputDecoration(
+                                    labelText: "Voucher Code",
+                                    hintText:
+                                        "Alphabets and number without separators",
+                                    errorText: idErrorText,
+                                  ),
+                                  onChanged: (value) {
+                                    _idController.text = value.toUpperCase();
+                                  }),
                               const SizedBox(height: 20),
                               TextField(
                                 controller: _descController,
