@@ -1,7 +1,3 @@
-Here's the updated version of the instructions, where Java 11 is replaced with Java 17:
-
----
-
 # BAIT2073 Mobile Application Development Assignment
 
 A Flutter project for Mobile Application Development assignment.
@@ -27,7 +23,7 @@ These instructions will guide you to manually build the app in either **debug** 
        java version "17.0.x"
        ```
 
-   - **Gradle 8.3:**
+   - **Gradle 8.0:**
 
      - Verify installation:
        ```bash
@@ -35,7 +31,7 @@ These instructions will guide you to manually build the app in either **debug** 
        ```
        Output should include:
        ```bash
-       Gradle 8.3
+       Gradle 8.0
        ```
 
    - **Flutter:**
@@ -139,4 +135,16 @@ These instructions will guide you to manually build the app in either **debug** 
 
 ---
 
-By following these steps, you can successfully build the Flutter app in either debug or release mode using Java 17.
+#### Tested Devices:
+
+The app has been tested on the following devices:
+
+- **Pixel 9** with **Android API 31**.
+- **Pixel XL** with **Android API 28**.
+
+These devices were used to ensure compatibility and proper functionality of the application across different Android versions.
+
+---
+
+By following these steps, you can successfully build the Flutter app in either debug or release mode using Java 17 and Gradle 8.0.
+
