@@ -141,6 +141,8 @@ The app has been tested on the following devices:
 
 - **Pixel 9** with **Android API 31**.
 - **Pixel XL** with **Android API 28**.
+- **Huawei P30** with **Android API 28**.
+- **Nothing 2a** with **Android API 35** (Unable to use AR). 
 
 These devices were used to ensure compatibility and proper functionality of the application across different Android versions.
 
