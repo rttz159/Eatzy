@@ -407,8 +407,7 @@ class _VendingMachineMapState extends State<VendingMachineMap> {
                             padding: const EdgeInsets.fromLTRB(8, 16, 8, 0),
                             child: Scrollbar(
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 8.0, horizontal: 16.0),
+                                padding: const EdgeInsets.all(8.0),
                                 child: ListView(
                                   children: [
                                     const Padding(
@@ -468,7 +467,8 @@ class _VendingMachineMapState extends State<VendingMachineMap> {
                                                   const EdgeInsets.all(8.0),
                                               child: Row(
                                                 mainAxisAlignment:
-                                                    MainAxisAlignment.center,
+                                                    MainAxisAlignment
+                                                        .spaceAround,
                                                 children: [
                                                   Flexible(
                                                     flex: 1,
