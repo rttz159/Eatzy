@@ -293,6 +293,23 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       setState(() {
         bestbeforeErrorStr = "Invalid Date";
       });
+    } else if (bestbeforeErrorStr ==
+            "The product has expired, please update the product." &&
+        selectedDate == null) {
+      setState(() {
+        bestbeforeErrorStr =
+            "The product has expired, please update the product.";
+      });
+    } else if (bestbeforeErrorStr ==
+            "The product has expired, please update the product." &&
+        selectedDate != null &&
+        selectedDate!.isBefore(DateTime.now().add(const Duration(days: 1)))) {
+      setState(() {
+        bestbeforeErrorStr =
+            "The product has expired, please update the product.";
+      });
+      Fluttertoast.showToast(
+          msg: "Updated date should be at least two days more.");
     } else {
       setState(() {
         bestbeforeErrorStr = null;
@@ -388,7 +405,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         : format.format(DateTime.parse(products!.getBestBefore)));
     if (DateTime.parse(products!.getBestBefore).isBefore(DateTime.now())) {
       bestbeforeErrorStr =
-          "The product has expired and will not shown to the user.";
+          "The product has expired, please update the product.";
     }
     selectedDate = (products == null
         ? null
