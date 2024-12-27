@@ -42,8 +42,7 @@ class _UserCartState extends State<UserCart> {
 
   final TextEditingController _voucherController = TextEditingController();
 
-  Future<bool> onPaymentSelected(
-      String paymentMethod, String? voucherCode) async {
+  Future<bool> onPaymentSelected(String paymentMethod) async {
     bool change = false;
     if (cartList.isEmpty) {
       Fluttertoast.showToast(msg: "Your Cart is Empty");
@@ -77,6 +76,7 @@ class _UserCartState extends State<UserCart> {
       Fluttertoast.showToast(msg: "Your Cart is Empty");
       return;
     }
+
     final voucherCode = _voucherController.text.trim();
     if (voucherCode.isEmpty) {
       setState(() {
@@ -91,7 +91,9 @@ class _UserCartState extends State<UserCart> {
         voucherCode == zhvoucher.getId) {
       setState(() {
         voucher = zhvoucher;
+        voucherErrorText = null;
       });
+      return;
     }
 
     if (sellerUpdated.length > 1) {
@@ -131,8 +133,7 @@ class _UserCartState extends State<UserCart> {
       _isLoading = true;
     });
 
-    bool change = await onPaymentSelected(paymentMethod,
-        _voucherController.text.isNotEmpty ? _voucherController.text : null);
+    bool change = await onPaymentSelected(paymentMethod);
 
     setState(() {
       _isLoading = false;
