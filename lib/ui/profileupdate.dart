@@ -2,6 +2,7 @@ import 'package:assignment/datamodel/normalusers.dart';
 import 'package:assignment/datamodel/sellers.dart';
 import 'package:assignment/services/clouddatabase.dart';
 import 'package:assignment/services/userprovider.dart';
+import 'package:assignment/ui/dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
@@ -186,6 +187,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Fluttertoast.showToast(msg: "Profile updated successfully.");
         showDialog(
           context: context,
+          barrierDismissible: false,
           builder: (BuildContext context) {
             return AlertDialog(
               title: const Text("Profile Update"),
@@ -196,6 +198,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   onPressed: () {
                     setState(() {
                       isEditing = false;
+                      Navigator.of(context).pop();
                     });
                     provider.signOutUser();
                   },
@@ -242,9 +245,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (context, userProvider, child) {
         if (userProvider.getCurrentUser == null) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            Navigator.of(context).pop();
-            Navigator.of(context).pop();
-            Navigator.of(context).pop();
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => const Dashboard()),
+              (Route<dynamic> route) => false,
+            );
           });
           return const Center(child: CircularProgressIndicator());
         }

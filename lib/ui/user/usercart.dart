@@ -67,6 +67,7 @@ class _UserCartState extends State<UserCart> {
           voucher: voucher);
       db.save(CloudDatabase.purchaseHistory, purchaseHistory.toJson());
       change = true;
+      Provider.of<UserCartDataProvider>(context, listen: false).cart = {};
     }
     return change;
   }
@@ -79,9 +80,7 @@ class _UserCartState extends State<UserCart> {
 
     final voucherCode = _voucherController.text.trim();
     if (voucherCode.isEmpty) {
-      setState(() {
-        voucherErrorText = 'Please enter a voucher code.';
-      });
+      voucherErrorText = null;
       return;
     }
 
