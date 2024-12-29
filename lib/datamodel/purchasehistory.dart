@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'package:assignment/datamodel/products.dart';
+import 'package:assignment/datamodel/voucher.dart';
 
 class PurchaseHistory {
   String? id;
   late String userId;
-  String? voucherId;
+  Voucher? voucher;
   late Map<Products, int> prodList;
   late String purchaseDate;
   late bool redeem;
@@ -15,7 +16,7 @@ class PurchaseHistory {
     required this.prodList,
     required this.purchaseDate,
     required this.redeem,
-    this.voucherId,
+    this.voucher,
   });
 
   factory PurchaseHistory.fromJson(Map<String, dynamic> map) {
@@ -23,7 +24,7 @@ class PurchaseHistory {
       id: map['id'] as String?,
       userId: map['userId'] as String,
       prodList: _decodeProdList(map['prodList']),
-      voucherId: map['voucherId'] as String?,
+      voucher: map['voucher'] != null ? Voucher.fromJson(map['voucher']) : null,
       purchaseDate: map['purchaseDate'] as String,
       redeem: map['redeem'] as bool,
     );
@@ -32,7 +33,7 @@ class PurchaseHistory {
   Map<String, dynamic> toJson() {
     return {
       'userId': userId,
-      'voucherId': voucherId,
+      'voucher': voucher?.toJson(),
       'prodList': _encodeProdList(prodList),
       'purchaseDate': purchaseDate,
       'redeem': redeem,

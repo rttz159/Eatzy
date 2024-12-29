@@ -1,6 +1,4 @@
 import 'package:assignment/datamodel/purchasehistory.dart';
-import 'package:assignment/datamodel/sellers.dart';
-import 'package:assignment/services/clouddatabase.dart';
 import 'package:assignment/ui/arguidance.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -21,38 +19,14 @@ class _UserRedeemPageState extends State<UserRedeemPage> {
   late double percentage;
   bool isLoading = false;
 
-  Future<void> getPercentage() async {
-    setState(() {
-      isLoading = true;
-    });
-    if (purchase.voucherId == null) {
-      setState(() {
-        percentage = 0.0;
-        isLoading = false;
-      });
-      return;
-    }
-    CloudDatabase db = CloudDatabase();
-    List<Sellers> sellerList = (await db.read(CloudDatabase.seller)).map((n) {
-      return Sellers.fromJson(n);
-    }).toList();
-    for (var x in sellerList) {
-      for (var y in x.getVouchers) {
-        if (purchase.voucherId! == y.getId!) {
-          setState(() {
-            percentage = (y.getPercentage / 100);
-            isLoading = false;
-          });
-          return;
-        }
-      }
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-    getPercentage();
+    if (purchase.voucher == null) {
+      percentage = 0;
+    } else {
+      percentage = purchase.voucher!.getPercentage / 100;
+    }
   }
 
   @override
@@ -206,13 +180,13 @@ class _UserRedeemPageState extends State<UserRedeemPage> {
                                   fontSize: 18, fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 10),
-                            purchase.voucherId == null
+                            purchase.voucher == null
                                 ? const Text(
                                     'None',
                                   )
-                                : Text("${purchase.voucherId}"),
+                                : Text("${purchase.voucher!.getId}"),
                             const SizedBox(height: 20),
-                            purchase.voucherId == null
+                            purchase.voucher == null
                                 ? Text(
                                     'Total: RM ${purchase.getTotalAmount().toStringAsFixed(2)}',
                                     style: const TextStyle(

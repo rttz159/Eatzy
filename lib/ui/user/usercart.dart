@@ -64,7 +64,7 @@ class _UserCartState extends State<UserCart> {
           prodList: cart,
           purchaseDate: DateTime.now().toIso8601String(),
           redeem: false,
-          voucherId: voucher?.getId);
+          voucher: voucher);
       db.save(CloudDatabase.purchaseHistory, purchaseHistory.toJson());
       change = true;
     }
