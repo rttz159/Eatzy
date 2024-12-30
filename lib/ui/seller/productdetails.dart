@@ -201,7 +201,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         bestbeforeErrorStr == null) {
       final provider = Provider.of<UserProvider>(context, listen: false);
       Sellers currentSeller = provider.getCurrentUser as Sellers;
-      print(currentSeller.toJson().toString());
 
       Products tempProd = Products(
           id: null,
