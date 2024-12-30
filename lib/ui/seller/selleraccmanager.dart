@@ -18,6 +18,11 @@ class SellerAccManager extends StatefulWidget {
 class _SellerAccManagerState extends State<SellerAccManager> {
   @override
   Widget build(BuildContext context) {
+    if (Provider.of<UserProvider>(context, listen: false).getCurrentUser ==
+        null) {
+      return const CircularProgressIndicator();
+    }
+
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -354,13 +359,13 @@ class _SellerAccManagerState extends State<SellerAccManager> {
                           onTap: () {
                             Provider.of<UserProvider>(context, listen: false)
                                 .signOutUser();
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                            if (mounted) {
                               Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
                                     builder: (context) => const Dashboard()),
                                 (Route<dynamic> route) => false,
                               );
-                            });
+                            }
                           },
                           title: const Text(
                             "Log Out",
