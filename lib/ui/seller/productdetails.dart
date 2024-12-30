@@ -201,6 +201,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         bestbeforeErrorStr == null) {
       final provider = Provider.of<UserProvider>(context, listen: false);
       Sellers currentSeller = provider.getCurrentUser as Sellers;
+      print(currentSeller.toJson().toString());
 
       Products tempProd = Products(
           id: null,
@@ -554,6 +555,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               TextField(
                 controller: _costpriceController,
                 enabled: isEditing,
+                keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   labelText: "Cost Price (RM)",
                   errorText: costpriceErrorStr,
@@ -565,6 +567,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               TextField(
                 controller: _sellingpriceController,
                 enabled: isEditing,
+                keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                     labelText: "Selling Price (RM)",
                     errorText: sellingpriceErrorStr),
@@ -575,6 +578,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               TextField(
                 controller: _qtyController,
                 enabled: isEditing,
+                keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   labelText: "Qty",
                   errorText: qtyErrorStr,

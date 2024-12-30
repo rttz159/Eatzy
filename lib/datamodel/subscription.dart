@@ -20,9 +20,10 @@ class Subscription {
 
   factory Subscription.fromJson(Map<String, dynamic> map) {
     var productList = map['products'] as List<dynamic>;
-    List<Products> productsList = productList
+    List<Products> productsList = [];
+    productsList.addAll(productList
         .map((product) => Products.fromJson(product as Map<String, dynamic>))
-        .toList();
+        .toList());
 
     return Subscription(
       id: map['id'] as String?,
