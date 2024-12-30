@@ -1,6 +1,7 @@
 import 'package:assignment/services/connectivityprovider.dart';
 import 'package:assignment/services/userpageprovider.dart';
 import 'package:assignment/services/userprovider.dart';
+import 'package:assignment/ui/dashboard.dart';
 import 'package:assignment/ui/feedback.dart';
 import 'package:assignment/ui/helpcentre.dart';
 import 'package:assignment/ui/setting.dart';
@@ -372,6 +373,13 @@ class _UserAccManagerState extends State<UserAccManager> {
                           onTap: () {
                             Provider.of<UserProvider>(context, listen: false)
                                 .signOutUser();
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                    builder: (context) => const Dashboard()),
+                                (Route<dynamic> route) => false,
+                              );
+                            });
                           },
                           title: const Text(
                             "Log Out",
